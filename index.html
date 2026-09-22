@@ -273,6 +273,9 @@
   .on-q .t { flex: 1; min-width: 0; }
   .on-q .subj { font-size: 11.5px; color: var(--sub); background: var(--line2); border-radius: 6px; padding: 1px 6px; margin-right: 6px; }
   .on-q.have { color: var(--faint); }
+  label.on-q { cursor: pointer; }
+  label.on-q:hover { background: var(--pri-soft); }
+  .on-q input[type=checkbox] { margin-top: 3px; }
 
   /* 알림 · 로딩 */
   .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: #151a2d; color: #fff; padding: 12px 20px;
@@ -860,7 +863,7 @@ function resetPw() {
 }
 
 /* ── 3. 지원 상세 ── */
-function openApp(id) { cur.appId = id; go('app'); }
+function openApp(id) { cur.appId = id; appOn = { open: false, sel: {} }; go('app'); }
 
 function renderApp() {
   var a = appById(cur.appId);
@@ -899,6 +902,7 @@ function renderApp() {
   }).join('') : '<div class="empty">' + ic('mic') + '아직 모의면접 강평이 없습니다.</div>';
   updateBulkCount();
   renderOnBox(a);
+  renderAppOnToggle();
 }
 
 function renderOnBox(a) {
@@ -910,9 +914,91 @@ function renderOnBox(a) {
       '<button class="icon-btn" onclick="openOnUpload(\'' + a.id + '\')">' + ic('upload') + '다시 올리기</button>' +
       '<button class="icon-btn bad" onclick="delOn(\'' + a.id + '\')">' + ic('trash') + '삭제</button></div>' +
       '<div class="small muted" style="margin-top:8px">' + esc(o.file) + ' · ' + esc(o.at) + (o.by ? ' · ' + esc(o.by) : '') + '</div>' +
-      '<p class="hint">' + ic('info') + '학생이 학생 화면에서 ' + ON_MAX + '개까지 골라 학생 질문으로 넣습니다. 면접 화면에서 나머지 질문도 펼쳐 볼 수 있습니다.</p>'
+      '<p class="hint">' + ic('info') + '학생이 학생 화면에서 ' + ON_MAX + '개까지 골라 학생 질문으로 넣습니다.</p>' +
+      '<button class="on-toggle" onclick="toggleAppOn()"><svg class="i" id="appOnIcon"><use href="#i-down"/></svg>' +
+      '<span id="appOnLabel"></span></button><div id="appOnList" class="hidden"></div>'
     : '<div class="onsum"><span class="muted small">아직 올리지 않았습니다.</span><span class="spacer"></span>' +
       '<button class="btn" onclick="openOnUpload(\'' + a.id + '\')">' + ic('upload') + 'PDF 올리기</button></div>';
+}
+
+/* 면접 전에 교사가 면접ON 질문을 골라 교사 질문으로 넣는다. (면접 중에도 면접 화면에서 고를 수 있다) */
+var appOn = { open: false, sel: {} };
+
+function renderAppOnToggle() {
+  var o = onqOf(cur.appId);
+  if (!o || !$('appOnLabel')) return;
+  $('appOnIcon').style.transform = appOn.open ? 'rotate(180deg)' : '';
+  $('appOnLabel').innerHTML = '질문 ' + o.n + '개 ' + (appOn.open ? '접기' : '펼쳐서 교사 질문으로 넣기');
+  $('appOnList').classList.toggle('hidden', !appOn.open);
+  if (appOn.open) renderAppOnList();
+}
+
+function toggleAppOn() {
+  appOn.open = !appOn.open;
+  appOn.sel = {};
+  renderAppOnToggle();
+  if (appOn.open && !onCache[cur.appId]) {
+    var appId = cur.appId;
+    api('getOnQuestions', { appId: appId }).then(function (res) {
+      if (!res.ok) { toast(res.msg, 4000); return; }
+      onCache[appId] = res.questions;
+      if (cur.appId === appId && appOn.open) renderAppOnToggle();
+    });
+  }
+}
+
+function renderAppOnList() {
+  var list = onCache[cur.appId];
+  if (!list) { $('appOnList').innerHTML = '<div class="empty">불러오는 중…</div>'; return; }
+  var have = {};
+  questionsOf(cur.appId).forEach(function (q) { have[q.text.trim()] = true; });
+  var area = '', left = 0;
+  var rows = list.map(function (q, i) {
+    var head = q.area !== area ? '<div class="on-area">' + esc(q.area || '기타') + '</div>' : '';
+    area = q.area;
+    var got = have[q.text.trim()];
+    if (!got) left++;
+    var t = (q.subj ? '<span class="subj">' + esc(q.subj) + '</span>' : '') + esc(q.text);
+    return head + (got
+      ? '<div class="on-q have"><div class="t">' + t + '</div><span class="small">이미 질문에 있음</span></div>'
+      : '<label class="on-q"><input type="checkbox"' + (appOn.sel[i] ? ' checked' : '') +
+        ' onchange="pickOn(' + i + ', this.checked)"><div class="t">' + t + '</div></label>');
+  }).join('');
+  var n = Object.keys(appOn.sel).length;
+  $('appOnList').innerHTML = rows +
+    (left ? '<div class="bulk-foot" style="margin-top:12px"><span class="muted small" id="appOnCount">' + n + '개 선택</span>' +
+      '<span class="spacer"></span><button class="btn pri" onclick="addOnPicked()"' + (n ? '' : ' disabled') + '>' +
+      ic('plus') + '교사 질문으로 추가</button></div>'
+      : '<p class="hint" style="margin-top:12px">' + ic('check') + '남은 질문이 없습니다. 모두 질문 목록에 들어 있습니다.</p>');
+}
+
+function pickOn(i, on) {
+  if (on) appOn.sel[i] = true; else delete appOn.sel[i];
+  renderAppOnList();
+}
+
+/** 고른 질문을 근거(과목)가 같은 것끼리 묶어 보낸다. 근거는 질문마다 다를 수 있다. */
+function addOnPicked() {
+  var list = onCache[cur.appId] || [];
+  var picked = Object.keys(appOn.sel).map(function (i) { return list[i]; }).filter(Boolean);
+  if (!picked.length) return;
+  var groups = {};
+  picked.forEach(function (q) { (groups[q.basis || ''] = groups[q.basis || ''] || []).push(q.text); });
+  var appId = cur.appId, author = me(), keys = Object.keys(groups), added = 0, failed = '';
+  // 시트 잠금에서 서로 밀리지 않도록 한 묶음씩 차례로 보낸다.
+  (function send(i) {
+    if (i >= keys.length) {
+      appOn.sel = {};
+      if (cur.appId === appId) renderApp();
+      toast(failed ? failed : added + '개를 교사 질문으로 넣었습니다. 학생에게는 모의면접 강평을 저장한 뒤 보입니다.', 4000);
+      return;
+    }
+    var basis = keys[i];
+    api('addQuestions', { appId: appId, author: author, questions: groups[basis], basis: basis }).then(function (res) {
+      if (res.ok) added += groups[basis].length; else failed = res.msg;
+      send(i + 1);
+    });
+  })(0);
 }
 
 function delOn(appId) {
