@@ -725,6 +725,13 @@ function ddayHtml(d) {
   var n = dday(d); if (n === null) return '';
   return '<span class="dday' + ddayCls(n) + '">' + ddayText(n) + '</span>';
 }
+/** 지원 카드의 큰 D-day: 다가오는 날짜 → D-n, 날짜가 모두 지남 → 지남, 날짜로 읽을 수 없음(추후 공지 등) → 미정 */
+function bigDday(dates) {
+  var n = dday(nextDate(dates));
+  if (n !== null) return '<span class="big-dday' + ddayCls(n) + '">' + ddayText(n) + '</span>';
+  var hasDate = dates.some(function (d) { return dday(d) !== null; });
+  return '<span class="big-dday past">' + (hasDate ? '지남' : '미정') + '</span>';
+}
 function mmdd(d) { var m = /^\d{4}-(\d{2})-(\d{2})$/.exec(d); return m ? (+m[1]) + '.' + (+m[2]) : d; }
 function datesHtml(dates) {
   if (!dates.length) return '<span class="muted">면접일 미정</span>';
@@ -828,10 +835,9 @@ function openStudent(key) {
   $('stApps').innerHTML = apps.length ? apps.map(function (a) {
     var qs = questionsOf(a.id), fbs = feedbacksOf(a.id);
     var sq = qs.filter(function (q) { return q.by === '학생'; }).length;
-    var nd = nextDate(a.dates), n = dday(nd);
     return '<div class="card appcard" onclick="openApp(\'' + a.id + '\')">' +
       '<div class="top">' + (a.kind ? '<span class="pill">' + esc(a.kind) + '</span>' : '') +
-      (n !== null ? '<span class="big-dday' + ddayCls(n) + '">' + ddayText(n) + '</span>' : '<span class="big-dday past">지남</span>') + '</div>' +
+      bigDday(a.dates) + '</div>' +
       '<div class="univ">' + esc(a.univ) + '</div>' +
       '<div class="major">' + esc(a.major) + '</div>' +
       '<div class="dates">' + ic('cal').replace('class="i"', 'class="i" style="width:15px;height:15px;vertical-align:-2px;color:var(--faint)"') + ' 면접 ' + (a.dates.length ? a.dates.map(function (x) { return esc(mmdd(x)); }).join(', ') : '미정') + '</div>' +
