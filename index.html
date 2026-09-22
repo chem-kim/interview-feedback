@@ -1107,7 +1107,7 @@ function matchOnFile(name, qs, err) {
   return row;
 }
 
-function appLabel(a) { return a.klass + '-' + a.no + ' ' + a.name + ' · ' + a.univ + ' ' + a.major; }
+function appLabel(a) { return a.klass + '-' + a.no + ' ' + a.name + ' · ' + a.univ + ' ' + a.major + (a.dates.length ? ' (' + a.dates.map(mmdd).join(', ') + ')' : ''); }
 
 function renderOnRes() {
   var rows = onUp.rows, uses = {};
