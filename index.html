@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>모의면접 강평</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+  :root {
+    --bg: #f5f6fa; --surface: #fff; --ink: #151a2d; --sub: #687085; --faint: #9aa1b2; --line: #e8eaf1; --line2: #f0f1f6;
+    --pri: #4f46e5; --pri-2: #6d5ff5; --pri-soft: #eef0ff; --pri-ink: #3730a3;
+    --stu: #2563eb; --stu-soft: #e8f0ff; --tea: #b45309; --tea-soft: #fff3e0;
+    --ok: #16a34a; --ok-soft: #e9f8ef; --warn: #d97706; --warn-soft: #fff6e5; --bad: #e11d48; --bad-soft: #ffeef2;
+    --r: 16px; --r-sm: 10px;
+    --sh: 0 1px 2px rgba(20, 26, 50, .04), 0 2px 8px rgba(20, 26, 50, .05);
+    --sh-lg: 0 10px 30px rgba(40, 40, 90, .10);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-size: 15px; line-height: 1.55; letter-spacing: -0.01em;
+    font-family: "Pretendard Variable", Pretendard, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+  button, input, textarea, select { font: inherit; color: inherit; letter-spacing: inherit; }
+  svg.i { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .hidden { display: none !important; }
+
+  /* 버튼 */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--line); background: var(--surface);
+    border-radius: var(--r-sm); padding: 9px 15px; font-weight: 600; cursor: pointer; transition: .15s; white-space: nowrap; }
+  .btn:hover { border-color: #d5d8e4; background: #fafbfd; }
+  .btn.pri { background: linear-gradient(135deg, var(--pri), var(--pri-2)); border-color: transparent; color: #fff; box-shadow: 0 4px 14px rgba(79, 70, 229, .28); }
+  .btn.pri:hover { filter: brightness(1.05); }
+  .btn.lg { padding: 13px 22px; font-size: 16px; border-radius: 12px; }
+  .btn.bad { color: var(--bad); }
+  .btn.bad:hover { background: var(--bad-soft); border-color: #fbd0db; }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .icon-btn { display: inline-flex; align-items: center; gap: 5px; background: none; border: 0; border-radius: 8px; padding: 6px 8px;
+    color: var(--sub); cursor: pointer; font-size: 13px; font-weight: 600; }
+  .icon-btn:hover { background: var(--line2); color: var(--ink); }
+  .icon-btn.bad:hover { background: var(--bad-soft); color: var(--bad); }
+  .icon-btn svg.i { width: 16px; height: 16px; }
+
+  input, textarea, select { border: 1px solid var(--line); border-radius: var(--r-sm); padding: 10px 12px; background: var(--surface); outline: none; transition: .15s; }
+  input:focus, textarea:focus, select:focus { border-color: var(--pri); box-shadow: 0 0 0 3px rgba(79, 70, 229, .12); }
+  textarea { width: 100%; resize: vertical; line-height: 1.6; }
+
+  /* 상단 */
+  .topbar { position: sticky; top: 0; z-index: 10; background: rgba(255, 255, 255, .85); backdrop-filter: saturate(1.6) blur(12px);
+    border-bottom: 1px solid var(--line); }
+  .topbar .in { max-width: 1180px; margin: 0 auto; padding: 12px 28px; display: flex; align-items: center; gap: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; margin-right: auto; cursor: pointer; }
+  .logo { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: #fff;
+    background: linear-gradient(135deg, var(--pri), #8b5cf6); box-shadow: 0 4px 12px rgba(99, 70, 229, .3); }
+  .logo svg.i { width: 19px; height: 19px; }
+  .me { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--sub); background: var(--line2); border-radius: 999px; padding: 4px 6px 4px 12px; }
+  .me select { border: 0; background: var(--surface); border-radius: 999px; padding: 5px 10px; font-weight: 600; box-shadow: var(--sh); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 28px 80px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 22px 24px; box-shadow: var(--sh); margin-bottom: 18px; }
+  .card-h { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .card-h h3 { font-size: 16px; font-weight: 700; margin: 0; }
+  .count { font-size: 12px; font-weight: 700; color: var(--sub); background: var(--line2); border-radius: 999px; padding: 2px 9px; }
+  .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .spacer { flex: 1; }
+  .muted { color: var(--sub); }
+  .small { font-size: 13px; }
+  .back { display: inline-flex; align-items: center; gap: 4px; background: none; border: 0; color: var(--sub); font-weight: 600; cursor: pointer;
+    padding: 6px 10px 6px 4px; margin: -6px 0 14px -4px; border-radius: 8px; }
+  .back:hover { color: var(--ink); background: var(--line2); }
+  .page-h { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+  .page-h h2 { font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+  .page-h .sub { color: var(--sub); margin-top: 2px; }
+  .empty { text-align: center; color: var(--faint); padding: 34px 10px; }
+  .empty svg.i { width: 34px; height: 34px; stroke-width: 1.5; display: block; margin: 0 auto 8px; }
+
+  /* 배지 */
+  .tag { display: inline-flex; align-items: center; font-size: 11.5px; font-weight: 700; border-radius: 6px; padding: 2px 7px; margin-right: 8px; white-space: nowrap; vertical-align: 1px; }
+  .tag.s { color: var(--stu); background: var(--stu-soft); }
+  .tag.t { color: var(--tea); background: var(--tea-soft); }
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 3px 10px; background: var(--line2); color: var(--sub); white-space: nowrap; }
+  .pill.ok { background: var(--ok-soft); color: var(--ok); }
+  .pill.warn { background: var(--warn-soft); color: var(--warn); }
+  .pill svg.i { width: 13px; height: 13px; }
+  .dday { display: inline-flex; font-size: 11.5px; font-weight: 800; color: var(--pri); background: var(--pri-soft); border-radius: 999px; padding: 1px 8px; margin-left: 6px; }
+  .dday.soon { color: var(--bad); background: var(--bad-soft); }
+  .dday.past { color: var(--faint); background: var(--line2); }
+
+  /* 잠금 */
+  #v-lock { position: fixed; inset: 0; display: grid; place-items: center; padding: 20px;
+    background: radial-gradient(1200px 600px at 10% 0%, #e6e4ff 0%, transparent 60%), radial-gradient(900px 500px at 100% 100%, #f3e8ff 0%, transparent 60%), var(--bg); }
+  .lock { width: 100%; max-width: 400px; padding: 36px 32px; text-align: center; box-shadow: var(--sh-lg); }
+  .lock .logo { width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 16px; }
+  .lock .logo svg.i { width: 28px; height: 28px; }
+  .lock h2 { font-size: 22px; margin: 0 0 4px; font-weight: 800; }
+  .lock input[type=password] { width: 100%; margin: 22px 0 12px; padding: 13px 14px; font-size: 16px; text-align: center; letter-spacing: .2em; }
+  .lock .btn { width: 100%; }
+  .check { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--sub); cursor: pointer; margin-bottom: 16px; }
+  .msg { min-height: 1.3em; font-size: 14px; margin-top: 10px; color: var(--bad); }
+
+  /* 학생 목록 */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; box-shadow: var(--sh); display: flex; gap: 14px; align-items: center; }
+  .stat .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; flex: none; }
+  .stat .ic svg.i { width: 21px; height: 21px; }
+  .stat .v { font-size: 24px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat .k { font-size: 13px; color: var(--sub); }
+  .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .seg { display: inline-flex; background: #eceef5; border-radius: 12px; padding: 4px; gap: 2px; flex-wrap: wrap; }
+  .seg button { border: 0; background: none; border-radius: 9px; padding: 7px 14px; font-weight: 600; color: var(--sub); cursor: pointer; }
+  .seg button.on { background: var(--surface); color: var(--ink); box-shadow: var(--sh); }
+  .search { position: relative; }
+  .search svg.i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--faint); width: 17px; height: 17px; }
+  .search input { padding-left: 36px; width: 210px; }
+  table.list { width: 100%; border-collapse: collapse; }
+  table.list th { text-align: left; font-size: 12.5px; color: var(--faint); font-weight: 600; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  table.list td { padding: 12px 14px; border-bottom: 1px solid var(--line2); }
+  table.list tbody tr { cursor: pointer; transition: background .12s; }
+  table.list tbody tr:hover { background: #f8f8fe; }
+  table.list tbody tr:last-child td { border-bottom: 0; }
+  table.list .num { text-align: center; font-variant-numeric: tabular-nums; }
+  .who { display: flex; align-items: center; gap: 12px; }
+  .ava { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 14px; flex: none; }
+  .ava.lg { width: 60px; height: 60px; font-size: 22px; }
+  .ava.sm { width: 26px; height: 26px; font-size: 11px; }
+  .who b { display: block; font-weight: 700; }
+  .who > div span { font-size: 12.5px; color: var(--faint); }
+  .qnum b { font-weight: 700; }
+  .qnum.zero { color: var(--bad); font-weight: 700; }
+  .qnum .sep { color: var(--faint); margin: 0 4px; }
+
+  /* 학생 상세 */
+  .profile { display: flex; align-items: center; gap: 18px; }
+  .apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .appcard { cursor: pointer; margin: 0; transition: .15s; position: relative; }
+  .appcard:hover { transform: translateY(-2px); box-shadow: var(--sh-lg); border-color: #d9dbfb; }
+  .appcard .top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .appcard .univ { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+  .appcard .major { color: var(--sub); margin-top: 1px; }
+  .appcard .dates { margin-top: 12px; font-size: 13.5px; }
+  .appcard .foot { display: flex; gap: 14px; margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 13px; color: var(--sub); }
+  .appcard .foot span { display: inline-flex; align-items: center; gap: 5px; }
+  .appcard .foot svg.i { width: 15px; height: 15px; }
+  .big-dday { margin-left: auto; font-size: 14px; font-weight: 800; color: var(--pri); background: var(--pri-soft); border-radius: 10px; padding: 4px 11px; }
+  .big-dday.soon { color: var(--bad); background: var(--bad-soft); }
+  .big-dday.past { color: var(--faint); background: var(--line2); }
+
+  /* 지원 상세 */
+  .hero { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 26px 28px;
+    background: linear-gradient(135deg, #ffffff 0%, #f7f6ff 100%); }
+  .hero h2 { font-size: 24px; font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+  .hero .meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  @media (max-width: 960px) { .cols { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } }
+  .q { display: flex; gap: 10px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--line2); }
+  .q:first-child { border-top: 0; padding-top: 2px; }
+  .q .body { flex: 1; min-width: 0; }
+  .q .basis { font-size: 12.5px; color: var(--faint); margin-top: 3px; }
+  .q .acts { display: flex; gap: 2px; opacity: .55; transition: .15s; }
+  .q:hover .acts { opacity: 1; }
+  .vis { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--faint); white-space: nowrap; margin-top: 3px; }
+  .vis.open { color: var(--ok); }
+  .vis svg.i { width: 14px; height: 14px; }
+  .q .edit textarea { margin: 6px 0; }
+  .q .edit input { width: 100%; }
+  .bulk-foot { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .hint { font-size: 12.5px; color: var(--faint); margin: 10px 0 0; display: flex; gap: 6px; align-items: flex-start; }
+  .hint svg.i { width: 15px; height: 15px; margin-top: 2px; }
+
+  .timeline { position: relative; }
+  .fb { position: relative; padding: 0 0 22px 26px; }
+  .fb::before { content: ""; position: absolute; left: 7px; top: 22px; bottom: 0; width: 2px; background: var(--line); }
+  .fb:last-child { padding-bottom: 0; }
+  .fb:last-child::before { display: none; }
+  .fb .dot { position: absolute; left: 0; top: 5px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); border: 3px solid var(--pri); }
+  .fb .h { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .fb .h b { font-size: 15px; }
+  .fb .acts { display: flex; gap: 0; margin-left: auto; }
+  .fb .asked { margin: 10px 0 0; padding: 10px 14px; background: #fafbfe; border-radius: 10px; border: 1px solid var(--line2); }
+  .fb .asked .t { font-size: 12px; font-weight: 700; color: var(--faint); margin-bottom: 4px; }
+  .fb .asked ol { margin: 0; padding-left: 18px; font-size: 13.5px; }
+  .fb .text { white-space: pre-wrap; margin-top: 10px; }
+
+  /* 면접 시작 */
+  .narrow { max-width: 680px; margin: 0 auto; }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .choice { border: 2px solid var(--line); border-radius: 14px; padding: 18px; cursor: pointer; transition: .15s; display: flex; gap: 14px; align-items: center; }
+  .choice input { display: none; }
+  .choice .ic { width: 44px; height: 44px; border-radius: 12px; background: var(--line2); display: grid; place-items: center; color: var(--sub); flex: none; }
+  .choice b { display: block; font-size: 16px; }
+  .choice span { font-size: 13px; color: var(--sub); }
+  .choice:has(input:checked) { border-color: var(--pri); background: var(--pri-soft); }
+  .choice:has(input:checked) .ic { background: var(--pri); color: #fff; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--line); border-radius: 999px; padding: 8px 15px; cursor: pointer; font-weight: 600; transition: .15s; user-select: none; }
+  .chip input { display: none; }
+  .chip svg.i { width: 15px; height: 15px; display: none; }
+  .chip:has(input:checked) { border-color: var(--pri); background: var(--pri); color: #fff; }
+  .chip:has(input:checked) svg.i { display: block; }
+  .label { font-size: 13px; font-weight: 700; color: var(--sub); margin: 0 0 10px; }
+
+  /* 면접 진행 */
+  .run { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 18px; align-items: start; }
+  @media (max-width: 960px) { .run { grid-template-columns: 1fr; } }
+  .timer-card { text-align: center; padding: 28px 24px; position: sticky; top: 84px; }
+  .ring { position: relative; width: 260px; height: 260px; margin: 8px auto 18px; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring circle { fill: none; stroke-width: 14; }
+  .ring .track { stroke: var(--line2); }
+  .ring .bar { stroke: var(--pri); stroke-linecap: round; transition: stroke-dashoffset .25s linear, stroke .3s; }
+  .ring .mid { position: absolute; inset: 0; display: grid; place-content: center; }
+  .timer { font-size: 58px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1; }
+  .timer-state { font-size: 13px; font-weight: 700; color: var(--sub); margin-top: 8px; }
+  .timer-card.warn .bar { stroke: var(--warn); }
+  .timer-card.warn .timer, .timer-card.warn .timer-state { color: var(--warn); }
+  .timer-card.over .bar { stroke: var(--bad); }
+  .timer-card.over .timer, .timer-card.over .timer-state { color: var(--bad); }
+  .timer-card.over { background: #fffafb; }
+  .run-title { font-weight: 700; }
+  .run-sub { font-size: 13px; color: var(--sub); }
+  .timer-card .row { justify-content: center; }
+  .checkq { display: flex; gap: 12px; align-items: flex-start; padding: 12px 12px; margin: 0 -12px; border-radius: 10px; cursor: pointer; transition: .12s; }
+  .checkq:hover { background: #f8f8fe; }
+  .checkq input { display: none; }
+  .box { width: 22px; height: 22px; border-radius: 7px; border: 2px solid #cfd3df; flex: none; display: grid; place-items: center; margin-top: 1px; transition: .12s; color: #fff; }
+  .box svg.i { width: 14px; height: 14px; stroke-width: 3; opacity: 0; }
+  .checkq:has(input:checked) .box { background: var(--ok); border-color: var(--ok); }
+  .checkq:has(input:checked) .box svg.i { opacity: 1; }
+  #runQs .checkq:has(input:checked) .qt { color: var(--faint); }
+  .dimdone .checkq:has(input:checked) { opacity: .45; }
+  .quick { display: flex; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line2); }
+  .quick input { flex: 1; }
+  .switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--sub); cursor: pointer; }
+
+  /* 강평 */
+  .rec-wrap { display: flex; align-items: center; gap: 18px; padding: 18px; margin-bottom: 14px; border-radius: 14px; background: #fafbfe; border: 1px solid var(--line2); }
+  .mic { position: relative; width: 64px; height: 64px; border-radius: 50%; border: 0; cursor: pointer; flex: none; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--pri), var(--pri-2)); color: #fff; box-shadow: 0 6px 18px rgba(79, 70, 229, .35); transition: .15s; }
+  .mic svg.i { width: 28px; height: 28px; }
+  .mic:hover { transform: scale(1.04); }
+  .mic:disabled { opacity: .4; cursor: default; transform: none; }
+  .mic.on { background: linear-gradient(135deg, #f43f5e, #e11d48); box-shadow: 0 6px 18px rgba(225, 29, 72, .35); }
+  .mic.on::before, .mic.on::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid #f43f5e; animation: wave 1.8s infinite; }
+  .mic.on::after { animation-delay: .9s; }
+  @keyframes wave { from { transform: scale(1); opacity: .6; } to { transform: scale(1.7); opacity: 0; } }
+  .rec-wrap b { display: block; font-size: 16px; }
+  .rec-wrap span { font-size: 13px; color: var(--sub); }
+  #fbText { min-height: 280px; font-size: 16px; padding: 16px 18px; }
+  .interim { color: var(--pri); min-height: 1.6em; margin-top: 8px; font-size: 14px; }
+  .interim:not(:empty)::before { content: "듣는 중 · "; font-weight: 700; }
+  .actionbar { position: sticky; bottom: 0; background: rgba(245, 246, 250, .9); backdrop-filter: blur(8px); padding: 14px 0; display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--line); margin-top: 6px; }
+
+  /* 면접ON */
+  .drop { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 38px 20px; border: 2px dashed #cfd3ef;
+    border-radius: var(--r); background: #fafaff; color: var(--sub); text-align: center; cursor: pointer; transition: .15s; }
+  .drop:hover, .drop.over { border-color: var(--pri); background: var(--pri-soft); color: var(--pri-ink); }
+  .drop svg.i { width: 34px; height: 34px; stroke-width: 1.5; color: var(--pri); }
+  .drop b { color: var(--ink); font-size: 16px; }
+  .progress { height: 6px; border-radius: 99px; background: var(--line2); overflow: hidden; margin-top: 14px; }
+  .progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--pri), var(--pri-2)); transition: width .2s; }
+  table.onres { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.onres th { text-align: left; font-size: 12.5px; color: var(--faint); font-weight: 600; padding: 10px 10px; border-bottom: 1px solid var(--line); }
+  table.onres td { padding: 10px 10px; border-bottom: 1px solid var(--line2); vertical-align: middle; }
+  table.onres td.file { max-width: 280px; word-break: break-all; color: var(--sub); font-size: 13px; }
+  table.onres select { padding: 7px 10px; max-width: 320px; }
+  .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  .onsum { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .on-toggle { width: 100%; display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 11px 12px; border: 1px dashed #cfd3ef; border-radius: 10px;
+    background: #fafaff; color: var(--pri-ink); font-weight: 700; cursor: pointer; }
+  .on-toggle:hover { background: var(--pri-soft); }
+  .on-toggle .muted { font-weight: 500; }
+  .on-area { font-size: 12.5px; font-weight: 800; color: var(--faint); margin: 14px 0 2px; }
+  .on-q { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; border-top: 1px solid var(--line2); font-size: 14px; }
+  .on-q .t { flex: 1; min-width: 0; }
+  .on-q .subj { font-size: 11.5px; color: var(--sub); background: var(--line2); border-radius: 6px; padding: 1px 6px; margin-right: 6px; }
+  .on-q.have { color: var(--faint); }
+
+  /* 알림 · 로딩 */
+  .toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: #151a2d; color: #fff; padding: 12px 20px;
+    border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 40; box-shadow: var(--sh-lg); max-width: 90vw; }
+  .loading { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 50; overflow: hidden; background: transparent; }
+  .loading::before { content: ""; position: absolute; top: 0; left: -40%; width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, var(--pri), var(--pri-2), transparent); animation: slide 1s infinite ease-in-out; }
+  @keyframes slide { to { left: 100%; } }
+  body.busy { cursor: progress; }
+  body.busy main { pointer-events: none; }
+
+  /* 인쇄 */
+  #printArea { display: none; }
+  @media print {
+    @page { size: A4; margin: 18mm 16mm; }
+    body { background: #fff; }
+    .topbar, main, .toast, .loading, #v-lock { display: none !important; }
+    #printArea { display: block; color: #000; font-size: 11pt; line-height: 1.65; }
+    #printArea h1 { font-size: 18pt; margin: 0; font-weight: 800; }
+    #printArea .head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #000; padding-bottom: 6px; }
+    #printArea .info { margin: 10px 0 18px; }
+    #printArea h2 { font-size: 13pt; margin: 18px 0 6px; }
+    #printArea ol { margin: 0; padding-left: 22px; }
+    #printArea li { margin-bottom: 4px; }
+    #printArea .fbtext { white-space: pre-wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 아이콘 -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1M12 18v4M8 22h8"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8M21 3v5h-5"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 15h6"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M17 6l3 3M14 9l2 2"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+</svg>
+
+<div class="topbar hidden" id="topbar">
+  <div class="in">
+    <div class="brand" onclick="go('list')"><span class="logo"><svg class="i"><use href="#i-mic"/></svg></span>모의면접 강평</div>
+    <span class="me">사용 교사 <select id="meSelect" onchange="setMe(this.value)"></select></span>
+    <button class="icon-btn" onclick="reload()" title="시트의 최신 자료 불러오기"><svg class="i"><use href="#i-refresh"/></svg>새로고침</button>
+    <button class="icon-btn" onclick="lockOut()" title="비밀번호 화면으로 돌아가기"><svg class="i"><use href="#i-lock"/></svg>잠금</button>
+  </div>
+</div>
+
+<main>
+  <!-- 0. 잠금 -->
+  <section id="v-lock" class="hidden">
+    <div class="card lock">
+      <div class="logo"><svg class="i"><use href="#i-mic"/></svg></div>
+      <h2>모의면접 강평</h2>
+      <div class="muted">교사 비밀번호를 입력하세요</div>
+      <input id="lockPw" type="password" autocomplete="current-password">
+      <label class="check"><input type="checkbox" id="lockRemember"> 이 컴퓨터에서 기억하기 (개인 노트북만)</label>
+      <button class="btn pri lg" id="lockBtn" onclick="unlock()">열기</button>
+      <div class="msg" id="lockMsg"></div>
+    </div>
+  </section>
+
+  <!-- 1. 학생 목록 -->
+  <section id="v-list" class="hidden">
+    <div class="page-h">
+      <div><h2>학생</h2><div class="sub">학생을 눌러 지원 대학과 질문, 강평을 확인하세요.</div></div>
+      <span class="spacer"></span>
+      <button class="btn" onclick="openOnUpload('')"><svg class="i"><use href="#i-upload"/></svg>면접ON PDF 올리기</button>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="toolbar">
+      <div class="seg" id="classFilters"></div>
+      <span class="spacer"></span>
+      <div class="search"><svg class="i"><use href="#i-search"/></svg><input id="search" placeholder="이름 검색" oninput="renderList()"></div>
+      <select id="sortSel" onchange="renderList()">
+        <option value="no">반·번호 순</option>
+        <option value="date">면접 가까운 순</option>
+      </select>
+    </div>
+    <div class="card" style="padding:6px 10px">
+      <table class="list">
+        <thead><tr>
+          <th>학생</th><th class="num">지원</th><th class="num">질문 학생 · 교사</th><th class="num">강평</th><th>다음 면접</th>
+        </tr></thead>
+        <tbody id="listBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 2. 학생 상세 -->
+  <section id="v-student" class="hidden">
+    <button class="back" onclick="go('list')"><svg class="i"><use href="#i-back"/></svg>학생 목록</button>
+    <div class="card profile">
+      <div id="stAva"></div>
+      <div>
+        <h2 id="stTitle" style="margin:0;font-size:24px;font-weight:800"></h2>
+        <div class="row" style="margin-top:4px"><span class="muted" id="stSub"></span><span id="stPw"></span></div>
+      </div>
+      <span class="spacer"></span>
+      <button class="btn bad" onclick="resetPw()"><svg class="i"><use href="#i-key"/></svg>비번 초기화</button>
+    </div>
+    <div class="card-h" style="margin:26px 0 12px"><h3>지원 대학</h3><span class="count" id="stAppCount"></span></div>
+    <div class="apps" id="stApps"></div>
+  </section>
+
+  <!-- 3. 지원 상세 -->
+  <section id="v-app" class="hidden">
+    <button class="back" id="appCrumb" onclick="openStudent(cur.studentKey)"></button>
+    <div class="card hero">
+      <div>
+        <h2 id="appTitle"></h2>
+        <div class="meta" id="appSub"></div>
+      </div>
+      <span class="spacer"></span>
+      <button class="btn pri lg" onclick="openStart()"><svg class="i"><use href="#i-play"/></svg>모의면접 시작</button>
+    </div>
+
+    <div class="cols">
+      <div>
+        <div class="card">
+          <div class="card-h"><h3>예상 질문</h3><span class="count" id="qSummary"></span></div>
+          <div id="qList"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>면접ON 보고서</h3></div>
+          <div id="onBox"></div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h3>교사 질문 추가</h3></div>
+          <textarea id="bulkQ" rows="5" placeholder="한 줄에 질문 하나. (앞의 번호는 자동으로 지웁니다)"></textarea>
+          <div class="bulk-foot">
+            <span class="muted small" id="bulkCount"></span>
+            <span class="spacer"></span>
+            <button class="btn pri" onclick="addBulk()"><svg class="i"><use href="#i-plus"/></svg>추가</button>
+          </div>
+          <p class="hint"><svg class="i"><use href="#i-info"/></svg>교사 질문은 학생에게 숨겨져 있다가, 모의면접 강평을 저장하면 공개됩니다.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h3>강평 기록</h3><span class="count" id="fbCount"></span></div>
+        <div class="timeline" id="fbList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-1. 면접ON PDF 올리기 -->
+  <section id="v-on" class="hidden">
+    <button class="back" id="onBack" onclick="closeOnUpload()"><svg class="i"><use href="#i-back"/></svg>돌아가기</button>
+    <div class="page-h">
+      <div><h2>면접ON PDF 올리기</h2><div class="sub" id="onSub"></div></div>
+    </div>
+    <div class="card">
+      <label class="drop" id="onDrop">
+        <input type="file" id="onFile" accept=".pdf,application/pdf" multiple hidden>
+        <svg class="i"><use href="#i-upload"/></svg>
+        <b id="onDropTitle">PDF 파일을 여기로 끌어다 놓으세요</b>
+        <span>또는 눌러서 고르기 · 여러 개를 한 번에 올릴 수 있습니다</span>
+      </label>
+      <div class="hidden" id="onProg">
+        <div class="small muted" id="onProgText" style="margin-top:14px"></div>
+        <div class="progress"><i id="onProgBar"></i></div>
+      </div>
+      <p class="hint"><svg class="i"><use href="#i-info"/></svg>PDF는 이 컴퓨터의 브라우저에서만 읽고, 시트에는 뽑아낸 질문만 저장됩니다. 꼬리질문(연계 질문)과 공통질문은 가져오지 않습니다.</p>
+    </div>
+    <div class="card hidden" id="onResCard">
+      <div class="card-h"><h3>읽은 파일</h3><span class="count" id="onResCount"></span></div>
+      <table class="onres">
+        <thead><tr><th>파일</th><th>연결할 지원 대학</th><th class="num">질문</th><th>상태</th></tr></thead>
+        <tbody id="onResBody"></tbody>
+      </table>
+      <div class="bulk-foot" style="margin-top:16px">
+        <span class="muted small" id="onResNote"></span>
+        <span class="spacer"></span>
+        <button class="btn pri" id="onSaveBtn" onclick="saveOnUpload()"><svg class="i"><use href="#i-check"/></svg>저장</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 면접 시작 -->
+  <section id="v-start" class="hidden">
+    <div class="narrow">
+      <button class="back" onclick="go('app')"><svg class="i"><use href="#i-back"/></svg>돌아가기</button>
+      <div class="card" style="padding:30px">
+        <div class="muted small" style="font-weight:700">모의면접 준비</div>
+        <h2 id="startTitle" style="margin:4px 0 26px;font-size:22px;font-weight:800"></h2>
+        <div class="label">면접유형</div>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="itype" value="서류" checked>
+            <span class="ic"><svg class="i"><use href="#i-doc"/></svg></span><span><b>서류 기반</b><span>10분</span></span></label>
+          <label class="choice"><input type="radio" name="itype" value="제시문">
+            <span class="ic"><svg class="i"><use href="#i-file"/></svg></span><span><b>제시문 기반</b><span>15분</span></span></label>
+        </div>
+        <div class="label">면접 교사 <span style="font-weight:500">(들어가는 선생님을 모두 고르세요)</span></div>
+        <div class="chips" id="startTeachers" style="margin-bottom:28px"></div>
+        <button class="btn pri lg" onclick="startInterview()" style="width:100%"><svg class="i"><use href="#i-play"/></svg>면접 시작</button>
+        <div class="msg" id="startMsg"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 면접 진행 -->
+  <section id="v-run" class="hidden">
+    <div class="run">
+      <div class="card timer-card" id="timerBox">
+        <div class="run-title" id="runTitle"></div>
+        <div class="run-sub" id="runSub"></div>
+        <div class="ring">
+          <svg viewBox="0 0 260 260"><circle class="track" cx="130" cy="130" r="113"/><circle class="bar" id="ringBar" cx="130" cy="130" r="113"/></svg>
+          <div class="mid"><div class="timer" id="timer">10:00</div><div class="timer-state" id="timerState">남은 시간</div></div>
+        </div>
+        <div class="row">
+          <button class="btn" id="pauseBtn" onclick="togglePause()"></button>
+          <button class="btn pri" onclick="endInterview()"><svg class="i"><use href="#i-stop"/></svg>면접 종료</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-h">
+          <h3>예상 질문</h3><span class="count" id="askedCount"></span>
+          <span class="spacer"></span>
+          <label class="switch"><input type="checkbox" id="dimDone" onchange="$('runQs').classList.toggle('dimdone', this.checked)"> 물어본 질문 흐리게</label>
+        </div>
+        <div id="runQs"></div>
+        <div class="quick">
+          <input id="quickQ" placeholder="즉석 질문 — 적고 Enter (교사 질문으로 추가되고 체크됨)">
+          <button class="btn" onclick="addQuick()"><svg class="i"><use href="#i-plus"/></svg>추가</button>
+        </div>
+        <div class="hidden" id="runOnBox">
+          <button class="on-toggle" onclick="toggleRunOn()"><svg class="i" id="runOnIcon"><use href="#i-down"/></svg><span id="runOnLabel"></span></button>
+          <div class="hidden" id="runOnList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 강평 -->
+  <section id="v-fb" class="hidden">
+    <div class="narrow" style="max-width:860px">
+      <div class="page-h">
+        <div>
+          <div class="muted small" style="font-weight:700" id="fbKicker">강평 작성</div>
+          <h2 id="fbTitle" style="font-size:22px"></h2>
+          <div class="sub small" id="fbSub"></div>
+        </div>
+        <span class="spacer"></span>
+        <label class="small muted" style="display:flex;align-items:center;gap:8px">면접일 <input type="date" id="fbDate"></label>
+      </div>
+
+      <div class="card hidden" id="fbEditMeta">
+        <div class="label">면접유형</div>
+        <div class="chips" id="fbTypeOpts" style="margin-bottom:18px">
+          <label class="chip"><input type="radio" name="fbType" value="서류"><svg class="i"><use href="#i-check"/></svg>서류</label>
+          <label class="chip"><input type="radio" name="fbType" value="제시문"><svg class="i"><use href="#i-check"/></svg>제시문</label>
+        </div>
+        <div class="label">면접 교사</div>
+        <div class="chips" id="fbTeachers"></div>
+      </div>
+
+      <div class="card">
+        <div class="rec-wrap">
+          <button class="mic" id="recBtn" onclick="toggleRec()" title="녹음 시작/정지"><svg class="i" id="recIcon"><use href="#i-mic"/></svg></button>
+          <div><b id="recLabel">녹음 시작</b><span id="recState">버튼을 누르고 말하면 아래에 글로 받아 적힙니다.</span></div>
+        </div>
+        <textarea id="fbText" placeholder="받아 적힌 내용이 여기에 채워집니다. 직접 입력·수정해도 됩니다."></textarea>
+        <div class="interim" id="interim"></div>
+        <p class="hint hidden" id="noSpeech"><svg class="i"><use href="#i-info"/></svg>이 브라우저는 음성 받아쓰기를 지원하지 않습니다. 크롬에서 열어 주세요. 직접 입력은 됩니다.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h3>물어본 질문</h3><span class="count" id="fbAskedCount"></span><span class="spacer"></span><span class="muted small">인쇄물에는 체크한 질문만 나옵니다</span></div>
+        <div id="fbAsked"></div>
+      </div>
+
+      <div class="actionbar">
+        <button class="btn" onclick="cancelFeedback()">취소</button>
+        <span class="msg" id="fbMsg" style="margin:0"></span>
+        <span class="spacer"></span>
+        <button class="btn" onclick="saveFeedback(false)">저장</button>
+        <button class="btn pri" onclick="saveFeedback(true)"><svg class="i"><use href="#i-print"/></svg>저장하고 인쇄·PDF</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div id="printArea"></div>
+<div class="toast hidden" id="toast"></div>
+<div class="loading hidden" id="loading"></div>
+
+<script>
+/* ── 설정 ── */
+var API_URL = 'https://script.google.com/macros/s/AKfycbzDds3b2Ee3im2p2tdatFZrdt5o8yBwG-QwkczqaeFU1BRg6kXvLZxJLQwVqPcwYwhiJw/exec';
+var TYPE_MIN = { '서류': 10, '제시문': 15 };
+var ON_MAX = 10; // 학생이 면접ON 질문에서 고를 수 있는 개수 (서버 ON_PICK_MAX와 같게)
+var LS = { pw: 'iv_pw', me: 'iv_me', teachers: 'iv_last_teachers' };
+var RING_C = 2 * Math.PI * 113;
+
+/* ── 상태 ── */
+var pw = '';
+var data = { teachers: [], students: [], apps: [], questions: [], feedbacks: [], onq: [] };
+var cur = { klass: 'all', studentKey: '', appId: '' };
+var run = null;     // 진행 중인 면접
+var fbEdit = null;  // 강평 화면 상태 { mode: 'new'|'edit', id, asked: {}, type, teachers }
+var dirty = false;  // 저장 안 한 강평이 있음
+
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function ic(name) { return '<svg class="i"><use href="#i-' + name + '"/></svg>'; }
+function lsGet(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+function lsSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+function toast(msg, ms) {
+  var t = $('toast'); t.textContent = msg; t.classList.remove('hidden');
+  clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.add('hidden'); }, ms || 2500);
+}
+var busy = 0;
+function loading(on) {
+  busy += on ? 1 : -1;
+  $('loading').classList.toggle('hidden', busy <= 0);
+  document.body.classList.toggle('busy', busy > 0);
+}
+
+/** 이름으로 정해지는 아바타 색 (같은 학생은 늘 같은 색) */
+var AVA = [['#e8f0ff', '#2563eb'], ['#fff1e6', '#c2410c'], ['#e9f8ef', '#15803d'], ['#f3e8ff', '#7e22ce'], ['#ffeef2', '#be123c'], ['#e6f7f8', '#0e7490'], ['#fef9c3', '#a16207']];
+function avatar(name, cls) {
+  var h = 0; String(name).split('').forEach(function (c) { h = (h * 31 + c.charCodeAt(0)) % 997; });
+  var c = AVA[h % AVA.length];
+  return '<span class="ava ' + (cls || '') + '" style="background:' + c[0] + ';color:' + c[1] + '">' + esc(String(name).slice(-2)) + '</span>';
+}
+
+/* ── 서버 ── */
+function api(action, body) {
+  body = Object.assign({ action: action, pw: pw }, body || {});
+  loading(true);
+  // Content-Type을 지정하지 않으면 text/plain으로 가서 CORS 사전 요청 없이 앱스 스크립트에 닿는다.
+  return fetch(API_URL, { method: 'POST', body: JSON.stringify(body) })
+    .then(function (r) { return r.json(); })
+    .catch(function (e) { return { ok: false, msg: '연결 오류: ' + e.message }; })
+    .then(function (res) {
+      loading(false);
+      if (res.needLogin && action !== 'auth') { lockOut(res.msg); return new Promise(function () {}); }
+      // 비번 확인·저장 결과에는 전체 자료(data)가 함께 온다 → 다시 불러오는 호출이 필요 없다.
+      if (res.ok && res.data) setData(res.data);
+      return res;
+    });
+}
+
+function setData(d) {
+  data = d;
+  renderMe();
+  if (!$('v-list').classList.contains('hidden')) { renderFilters(); renderList(); }
+}
+
+function reload() {
+  return api('loadAll').then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    setData(res);
+    if (!$('v-student').classList.contains('hidden')) openStudent(cur.studentKey);
+    if (!$('v-app').classList.contains('hidden')) renderApp();
+    toast('최신 자료를 불러왔습니다.');
+  });
+}
+
+/* ── 화면 전환 ── */
+var VIEWS = ['lock', 'list', 'student', 'app', 'on', 'start', 'run', 'fb'];
+function go(v) {
+  if (v === 'list' && run) return; // 면접 중에는 목록으로 가지 않는다
+  VIEWS.forEach(function (x) { $('v-' + x).classList.toggle('hidden', x !== v); });
+  $('topbar').classList.toggle('hidden', v === 'lock');
+  if (v === 'list') { renderFilters(); renderList(); }
+  if (v === 'app') renderApp();
+  if (v === 'lock') setTimeout(function () { $('lockPw').focus(); }, 50);
+  window.scrollTo(0, 0);
+}
+
+/* ── 잠금 ── */
+function unlock() {
+  pw = $('lockPw').value;
+  if (!pw) return;
+  $('lockMsg').textContent = '';
+  $('lockBtn').disabled = true;
+  api('auth').then(function (res) {
+    $('lockBtn').disabled = false;
+    if (!res.ok) { $('lockMsg').textContent = res.msg; pw = ''; return; }
+    lsSet(LS.pw, $('lockRemember').checked ? pw : '');
+    $('lockPw').value = '';
+    go('list');
+  });
+}
+$('lockPw').addEventListener('keydown', function (e) { if (e.key === 'Enter') unlock(); });
+
+function lockOut(msg) {
+  if (dirty && !confirm('저장하지 않은 강평이 있습니다. 잠글까요?')) return;
+  stopRec(); dirty = false;
+  if (run && run.timer) clearInterval(run.timer);
+  run = null;
+  pw = ''; lsSet(LS.pw, '');
+  $('lockMsg').textContent = msg || '';
+  go('lock');
+}
+
+/* ── 사용 교사 (질문 작성자) ── */
+function me() { return lsGet(LS.me); }
+function setMe(v) { lsSet(LS.me, v); }
+function renderMe() {
+  var sel = $('meSelect'), m = me();
+  sel.innerHTML = '<option value="">선택</option>' + data.teachers.map(function (t) {
+    return '<option' + (t === m ? ' selected' : '') + '>' + esc(t) + '</option>';
+  }).join('');
+}
+
+/* ── 날짜 ── */
+function today() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function dday(s) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s); if (!m) return null;
+  var t = new Date(); t.setHours(0, 0, 0, 0);
+  return Math.round((new Date(+m[1], +m[2] - 1, +m[3]) - t) / 86400000);
+}
+function nextDate(dates) {
+  var f = dates.filter(function (d) { var n = dday(d); return n !== null && n >= 0; }).sort();
+  return f[0] || '';
+}
+function ddayText(n) { return n === 0 ? 'D-DAY' : n > 0 ? 'D-' + n : '지남'; }
+function ddayCls(n) { return n < 0 ? ' past' : n <= 7 ? ' soon' : ''; }
+function ddayHtml(d) {
+  var n = dday(d); if (n === null) return '';
+  return '<span class="dday' + ddayCls(n) + '">' + ddayText(n) + '</span>';
+}
+function mmdd(d) { var m = /^\d{4}-(\d{2})-(\d{2})$/.exec(d); return m ? (+m[1]) + '.' + (+m[2]) : d; }
+function datesHtml(dates) {
+  if (!dates.length) return '<span class="muted">면접일 미정</span>';
+  return dates.map(function (d) { return esc(mmdd(d)) + ddayHtml(d); }).join('&nbsp;&nbsp;');
+}
+
+/* ── 데이터 도우미 ── */
+function sKey(k, n) { return k + '-' + n; }
+function studentOf(key) { return data.students.filter(function (s) { return sKey(s.klass, s.no) === key; })[0]; }
+function appsOf(key) {
+  return data.apps.filter(function (a) { return sKey(a.klass, a.no) === key; }).sort(function (a, b) {
+    return (nextDate(a.dates) || '9999').localeCompare(nextDate(b.dates) || '9999');
+  });
+}
+function appById(id) { return data.apps.filter(function (a) { return a.id === id; })[0]; }
+function questionsOf(appId) {
+  return data.questions.filter(function (q) { return q.appId === appId; })
+    .sort(function (a, b) { return (a.by === b.by ? 0 : a.by === '학생' ? -1 : 1) || a.createdAt - b.createdAt; });
+}
+function feedbacksOf(appId) {
+  return data.feedbacks.filter(function (f) { return f.appId === appId; })
+    .sort(function (a, b) { return (a.date + a.recorded).localeCompare(b.date + b.recorded); })
+    .map(function (f, i) { return Object.assign({ round: i + 1 }, f); });
+}
+function qTag(q) { return '<span class="tag ' + (q.by === '학생' ? 's">학생' : 't">교사') + '</span>'; }
+function onqOf(appId) { return (data.onq || []).filter(function (x) { return x.appId === appId; })[0]; }
+
+/* ── 1. 학생 목록 ── */
+function renderFilters() {
+  var ks = {};
+  data.students.forEach(function (s) { ks[s.klass] = true; });
+  var list = Object.keys(ks).sort(function (a, b) { return a - b; });
+  $('classFilters').innerHTML = ['all'].concat(list).map(function (k) {
+    return '<button class="' + (cur.klass === k ? 'on' : '') + '" onclick="cur.klass=\'' + k + '\';renderFilters();renderList()">' +
+      (k === 'all' ? '전체' : k + '반') + '</button>';
+  }).join('');
+}
+
+function studentRow(s) {
+  var key = sKey(s.klass, s.no), apps = appsOf(key), ids = {};
+  apps.forEach(function (a) { ids[a.id] = true; });
+  var qs = data.questions.filter(function (x) { return ids[x.appId]; });
+  var next = '', nextApp = null;
+  apps.forEach(function (a) { var d = nextDate(a.dates); if (d && (!next || d < next)) { next = d; nextApp = a; } });
+  return {
+    s: s, key: key, apps: apps.length, next: next, nextApp: nextApp,
+    sq: qs.filter(function (x) { return x.by === '학생'; }).length,
+    tq: qs.filter(function (x) { return x.by === '교사'; }).length,
+    fb: data.feedbacks.filter(function (f) { return ids[f.appId]; }).length
+  };
+}
+
+/** 위쪽 숫자 칸: 고른 반의 학생만 센다 (전체면 모두) */
+function renderStats(all) {
+  var soon = all.filter(function (r) { var n = dday(r.next); return n !== null && n <= 7; }).length;
+  var noq = all.filter(function (r) { return !r.sq; }).length;
+  var fbs = all.reduce(function (sum, r) { return sum + r.fb; }, 0);
+  var tiles = [
+    ['users', '#eef0ff', '#4f46e5', all.length + '명', cur.klass === 'all' ? '학생' : cur.klass + '반 학생'],
+    ['chat', noq ? '#ffeef2' : '#e9f8ef', noq ? '#e11d48' : '#16a34a', noq + '명', '예상 질문 0개'],
+    ['cal', '#fff6e5', '#d97706', soon + '명', '7일 안에 면접'],
+    ['mic', '#e6f7f8', '#0e7490', fbs + '회', '누적 강평']
+  ];
+  $('stats').innerHTML = tiles.map(function (t) {
+    return '<div class="stat"><span class="ic" style="background:' + t[1] + ';color:' + t[2] + '">' + ic(t[0]) + '</span>' +
+      '<div><div class="v">' + t[3] + '</div><div class="k">' + t[4] + '</div></div></div>';
+  }).join('');
+}
+
+function renderList() {
+  var all = data.students.map(studentRow);
+  renderStats(all.filter(function (r) { return cur.klass === 'all' || r.s.klass === cur.klass; }));
+  var q = $('search').value.replace(/\s/g, '');
+  var rows = all.filter(function (r) {
+    return (cur.klass === 'all' || r.s.klass === cur.klass) && (!q || r.s.name.replace(/\s/g, '').indexOf(q) >= 0);
+  });
+  if ($('sortSel').value === 'date') rows.sort(function (a, b) { return (a.next || '9999').localeCompare(b.next || '9999'); });
+  else rows.sort(function (a, b) { return a.s.klass - b.s.klass || a.s.no - b.s.no; });
+
+  $('listBody').innerHTML = rows.length ? rows.map(function (r) {
+    return '<tr onclick="openStudent(\'' + r.key + '\')">' +
+      '<td><div class="who">' + avatar(r.s.name) + '<div><b>' + esc(r.s.name) + '</b><span>' + esc(r.s.klass) + '반 ' + esc(r.s.no) + '번</span></div></div></td>' +
+      '<td class="num">' + r.apps + '</td>' +
+      '<td class="num"><span class="qnum' + (r.sq ? '' : ' zero') + '"><b>' + r.sq + '</b><span class="sep">·</span>' + r.tq + '</span></td>' +
+      '<td class="num">' + (r.fb ? '<span class="pill ok">' + r.fb + '회</span>' : '<span class="muted">—</span>') + '</td>' +
+      '<td>' + (r.nextApp ? esc(r.nextApp.univ) + ' <span class="muted small">' + esc(mmdd(r.next)) + '</span>' + ddayHtml(r.next) : '<span class="muted">—</span>') + '</td></tr>';
+  }).join('') : '<tr><td colspan="5"><div class="empty">' + ic('users') + '학생이 없습니다. 시트의 붙여넣기 탭에서 지원 현황을 불러오세요.</div></td></tr>';
+}
+
+/* ── 2. 학생 상세 ── */
+function openStudent(key) {
+  cur.studentKey = key;
+  var s = studentOf(key);
+  if (!s) { go('list'); return; }
+  $('stAva').innerHTML = avatar(s.name, 'lg');
+  $('stTitle').textContent = s.name;
+  $('stSub').textContent = s.klass + '반 ' + s.no + '번';
+  $('stPw').innerHTML = s.pwChanged ? '<span class="pill ok">' + ic('check') + '비밀번호 변경함</span>' : '<span class="pill warn">초기 비밀번호 1234</span>';
+  var apps = appsOf(key);
+  $('stAppCount').textContent = apps.length + '곳';
+  $('stApps').innerHTML = apps.length ? apps.map(function (a) {
+    var qs = questionsOf(a.id), fbs = feedbacksOf(a.id);
+    var sq = qs.filter(function (q) { return q.by === '학생'; }).length;
+    var nd = nextDate(a.dates), n = dday(nd);
+    return '<div class="card appcard" onclick="openApp(\'' + a.id + '\')">' +
+      '<div class="top">' + (a.kind ? '<span class="pill">' + esc(a.kind) + '</span>' : '') +
+      (n !== null ? '<span class="big-dday' + ddayCls(n) + '">' + ddayText(n) + '</span>' : '<span class="big-dday past">지남</span>') + '</div>' +
+      '<div class="univ">' + esc(a.univ) + '</div>' +
+      '<div class="major">' + esc(a.major) + '</div>' +
+      '<div class="dates">' + ic('cal').replace('class="i"', 'class="i" style="width:15px;height:15px;vertical-align:-2px;color:var(--faint)"') + ' 면접 ' + (a.dates.length ? a.dates.map(function (x) { return esc(mmdd(x)); }).join(', ') : '미정') + '</div>' +
+      '<div class="foot"><span>' + ic('chat') + '학생 ' + sq + ' · 교사 ' + (qs.length - sq) + '</span>' +
+      '<span>' + ic('mic') + '강평 ' + fbs.length + '회' + (fbs.length ? ' · 최근 ' + esc(mmdd(fbs[fbs.length - 1].date)) : '') + '</span>' +
+      (onqOf(a.id) ? '<span>' + ic('file') + '면접ON ' + onqOf(a.id).picked + '/' + ON_MAX + '</span>' : '') + '</div>' +
+      '</div>';
+  }).join('') : '<div class="card empty">' + ic('cal') + '면접이 있는 지원 대학이 없습니다.</div>';
+  go('student');
+}
+
+function resetPw() {
+  var s = studentOf(cur.studentKey);
+  if (!confirm(s.name + ' 학생의 비밀번호를 1234로 되돌릴까요?\n학생은 다음 로그인 때 새 비밀번호를 정합니다.')) return;
+  api('resetPassword', { klass: s.klass, no: s.no }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    toast('1234로 초기화했습니다.');
+    openStudent(cur.studentKey);
+  });
+}
+
+/* ── 3. 지원 상세 ── */
+function openApp(id) { cur.appId = id; go('app'); }
+
+function renderApp() {
+  var a = appById(cur.appId);
+  if (!a) { go('list'); return; }
+  var s = studentOf(sKey(a.klass, a.no));
+  $('appCrumb').innerHTML = ic('back') + esc(s.name);
+  $('appTitle').textContent = a.univ + ' · ' + a.major;
+  $('appSub').innerHTML = avatar(s.name, 'sm') +
+    '<span>' + esc(s.klass + '반 ' + s.no + '번 ' + s.name) + '</span>' + (a.kind ? '<span class="pill">' + esc(a.kind) + '</span>' : '') +
+    '<span class="muted">면접 ' + datesHtml(a.dates) + '</span>';
+
+  var qs = questionsOf(a.id);
+  var sq = qs.filter(function (q) { return q.by === '학생'; }).length;
+  $('qSummary').textContent = '학생 ' + sq + ' · 교사 ' + (qs.length - sq);
+  $('qList').innerHTML = qs.length ? qs.map(function (q) {
+    return '<div class="q" id="q-' + q.id + '"><div class="body">' + qTag(q) + '<span class="qtext">' + esc(q.text) + '</span>' +
+      (q.basis ? '<div class="basis">근거 · ' + esc(q.basis) + '</div>' : '') +
+      (q.by === '교사' ? '<div class="vis' + (q.open ? ' open' : '') + '">' + ic(q.open ? 'eye' : 'lock') + (q.open ? '학생에게 공개됨' : '학생에게 숨김') + '</div>' : '') + '</div>' +
+      '<div class="acts"><button class="icon-btn" title="수정" onclick="editQ(\'' + q.id + '\')">' + ic('edit') + '</button>' +
+      '<button class="icon-btn bad" title="삭제" onclick="delQ(\'' + q.id + '\')">' + ic('trash') + '</button></div></div>';
+  }).join('') : '<div class="empty">' + ic('chat') + '아직 질문이 없습니다.</div>';
+
+  var fbs = feedbacksOf(a.id).reverse();
+  $('fbCount').textContent = fbs.length + '회';
+  $('fbList').innerHTML = fbs.length ? fbs.map(function (f) {
+    var asked = askedQuestions(f);
+    return '<div class="fb"><span class="dot"></span><div class="h"><b>' + f.round + '차</b><span class="muted">' + esc(f.date) + '</span>' +
+      '<span class="pill">' + esc(f.type) + '</span>' +
+      '<div class="acts"><button class="icon-btn" title="인쇄" onclick="printFb(\'' + f.id + '\', false)">' + ic('print') + '</button>' +
+      '<button class="icon-btn" title="PDF 저장" onclick="printFb(\'' + f.id + '\', true)">' + ic('file') + '</button>' +
+      '<button class="icon-btn" title="수정" onclick="openFeedbackEdit(\'' + f.id + '\')">' + ic('edit') + '</button>' +
+      '<button class="icon-btn bad" title="삭제" onclick="delFb(\'' + f.id + '\')">' + ic('trash') + '</button></div></div>' +
+      (f.teachers ? '<div class="small muted" style="margin-top:2px">' + esc(f.teachers) + '</div>' : '') +
+      (asked.length ? '<div class="asked"><div class="t">물어본 질문 ' + asked.length + '</div><ol>' + asked.map(function (q) { return '<li>' + esc(q.text) + '</li>'; }).join('') + '</ol></div>' : '') +
+      '<div class="text">' + esc(f.text || '(강평 내용 없음)') + '</div></div>';
+  }).join('') : '<div class="empty">' + ic('mic') + '아직 모의면접 강평이 없습니다.</div>';
+  updateBulkCount();
+  renderOnBox(a);
+}
+
+function renderOnBox(a) {
+  var o = onqOf(a.id);
+  $('onBox').innerHTML = o
+    ? '<div class="onsum"><span class="pill ok">' + ic('check') + '질문 ' + o.n + '개</span>' +
+      '<span class="pill' + (o.picked ? '' : ' warn') + '">학생이 고른 질문 ' + o.picked + '/' + ON_MAX + '</span>' +
+      '<span class="spacer"></span>' +
+      '<button class="icon-btn" onclick="openOnUpload(\'' + a.id + '\')">' + ic('upload') + '다시 올리기</button>' +
+      '<button class="icon-btn bad" onclick="delOn(\'' + a.id + '\')">' + ic('trash') + '삭제</button></div>' +
+      '<div class="small muted" style="margin-top:8px">' + esc(o.file) + ' · ' + esc(o.at) + (o.by ? ' · ' + esc(o.by) : '') + '</div>' +
+      '<p class="hint">' + ic('info') + '학생이 학생 화면에서 ' + ON_MAX + '개까지 골라 학생 질문으로 넣습니다. 면접 화면에서 나머지 질문도 펼쳐 볼 수 있습니다.</p>'
+    : '<div class="onsum"><span class="muted small">아직 올리지 않았습니다.</span><span class="spacer"></span>' +
+      '<button class="btn" onclick="openOnUpload(\'' + a.id + '\')">' + ic('upload') + 'PDF 올리기</button></div>';
+}
+
+function delOn(appId) {
+  if (!confirm('올린 면접ON 질문을 지울까요?\n학생이 이미 골라 넣은 질문은 학생 질문으로 남습니다.')) return;
+  api('deleteOnQuestions', { appId: appId }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    delete onCache[appId];
+    renderApp();
+  });
+}
+
+function askedQuestions(f) {
+  return f.asked.map(function (id) { return data.questions.filter(function (q) { return q.id === id; })[0]; }).filter(Boolean);
+}
+
+var NUM_RE = /^\s*(?:\(?\d{1,3}\s*[.)]|Q\s*\d{1,3}\s*[.:)]?|\d{1,3}\s*번\s*[.)]?|[-*•·▶►◦])\s*/i;
+
+/**
+ * 붙여넣은 글을 질문 목록으로 나눈다. (학생 화면과 같은 규칙)
+ * - `1. … 2. …`처럼 한 줄에 이어 적어도 번호 앞에서 나눈다.
+ * - 번호가 있는 글이면, 번호 없는 줄은 앞 질문에 이어 붙인다 (긴 질문을 엔터로 끊은 경우).
+ * - 번호가 전혀 없으면 한 줄 = 질문 하나.
+ */
+function parseBulk(text) {
+  var lines = String(text || '')
+    .replace(/\s+(?=(?:\(?\d{1,2}[.)]|Q\d{1,2}[.:)]|\d{1,2}번[.)]?)\s)/gi, '\n')
+    .split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+  var hasNum = lines.some(function (l) { return NUM_RE.test(l); });
+  if (!hasNum) return lines;
+  var out = [];
+  lines.forEach(function (l) {
+    if (NUM_RE.test(l)) out.push(l.replace(NUM_RE, '').trim());
+    else if (out.length) out[out.length - 1] += ' ' + l;
+    else out.push(l);
+  });
+  return out.filter(Boolean);
+}
+function updateBulkCount() {
+  var n = parseBulk($('bulkQ').value).length;
+  $('bulkCount').textContent = n ? '질문 ' + n + '개로 나뉩니다' : '';
+}
+$('bulkQ').addEventListener('input', updateBulkCount);
+
+function addBulk() {
+  var qs = parseBulk($('bulkQ').value);
+  if (!qs.length) { toast('추가할 질문이 없습니다.'); return; }
+  if (!me()) { toast('위쪽 "사용 교사"에서 선생님 이름을 먼저 고르세요.', 4000); $('meSelect').focus(); return; }
+  api('addQuestions', { appId: cur.appId, author: me(), questions: qs }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    $('bulkQ').value = '';
+    toast('질문 ' + qs.length + '개를 추가했습니다.');
+    renderApp();
+  });
+}
+
+function editQ(id) {
+  var q = data.questions.filter(function (x) { return x.id === id; })[0];
+  var row = $('q-' + id);
+  row.querySelector('.acts').classList.add('hidden');
+  row.querySelector('.body').innerHTML = qTag(q) + '<div class="edit"><textarea rows="2" id="eq-' + id + '">' + esc(q.text) + '</textarea>' +
+    '<input id="eb-' + id + '" placeholder="근거 (선택)" value="' + esc(q.basis) + '">' +
+    '<div class="row" style="margin-top:8px"><button class="btn pri" onclick="saveQ(\'' + id + '\')">저장</button>' +
+    '<button class="btn" onclick="renderApp()">취소</button></div></div>';
+  $('eq-' + id).focus();
+}
+function saveQ(id) {
+  api('updateQuestion', { id: id, text: $('eq-' + id).value, basis: $('eb-' + id).value }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    renderApp();
+  });
+}
+function delQ(id) {
+  if (!confirm('이 질문을 삭제할까요?')) return;
+  api('deleteQuestion', { id: id }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 5000); return; }
+    renderApp();
+  });
+}
+function delFb(id) {
+  if (!confirm('이 강평 기록을 삭제할까요? 되돌릴 수 없습니다.')) return;
+  api('deleteFeedback', { id: id }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    renderApp();
+  });
+}
+
+/* ── 3-1. 면접ON PDF 올리기 ── */
+var onUp = { target: '', rows: [], busy: false };
+
+/** appId가 있으면 그 지원 하나에 올린다. 없으면 여러 파일을 파일 이름으로 연결한다. */
+function openOnUpload(appId) {
+  onUp = { target: appId, rows: [], busy: false };
+  var a = appId && appById(appId), s = a && studentOf(sKey(a.klass, a.no));
+  $('onSub').textContent = a
+    ? s.name + ' · ' + a.univ + ' ' + a.major + '에 연결합니다.'
+    : '파일 이름(예: 김지후 면접ON_건국대학교_KU자유전공학부.pdf)으로 학생과 지원 대학을 찾아 연결합니다.';
+  $('onDropTitle').textContent = a ? 'PDF 파일을 여기로 끌어다 놓으세요' : 'PDF 파일을 여기로 끌어다 놓으세요 (반 전체를 한 번에)';
+  $('onFile').multiple = !a;
+  $('onProg').classList.add('hidden');
+  $('onResCard').classList.add('hidden');
+  go('on');
+}
+function closeOnUpload() {
+  if (onUp.busy) return;
+  if (onUp.target) go('app'); else go('list');
+}
+
+(function () {
+  var drop = $('onDrop');
+  ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+  drop.addEventListener('drop', function (e) { readOnFiles(e.dataTransfer.files); });
+  $('onFile').addEventListener('change', function () { readOnFiles(this.files); this.value = ''; });
+})();
+
+var PDFJS = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/';
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve();
+  return new Promise(function (resolve, reject) {
+    var s = document.createElement('script');
+    s.src = PDFJS + 'pdf.min.js';
+    s.onload = function () { pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + 'pdf.worker.min.js'; resolve(); };
+    s.onerror = function () { reject(new Error('PDF 읽기 도구를 불러오지 못했습니다. 인터넷 연결을 확인하세요.')); };
+    document.head.appendChild(s);
+  });
+}
+
+function readOnFiles(fileList) {
+  if (onUp.busy) return;
+  var files = Array.prototype.slice.call(fileList || []).filter(function (f) { return /\.pdf$/i.test(f.name); });
+  if (!files.length) { toast('PDF 파일을 골라 주세요.'); return; }
+  if (onUp.target) files = files.slice(0, 1);
+  onUp.busy = true;
+  $('onProg').classList.remove('hidden');
+  var done = 0;
+  function prog(name) {
+    $('onProgText').textContent = done < files.length ? '읽는 중 ' + (done + 1) + ' / ' + files.length + ' · ' + name : files.length + '개 파일을 읽었습니다.';
+    $('onProgBar').style.width = Math.round(done / files.length * 100) + '%';
+  }
+  var chain = loadPdfJs();
+  files.forEach(function (f) {
+    chain = chain.then(function () {
+      prog(f.name);
+      return readOnPdf(f).then(function (qs) { return matchOnFile(f.name, qs, ''); }, function (e) { return matchOnFile(f.name, [], 'PDF를 읽지 못했습니다'); })
+        .then(function (row) {
+          // 같은 파일을 다시 올리면 앞의 것을 바꾼다
+          onUp.rows = onUp.rows.filter(function (r) { return r.file !== row.file; }).concat([row]);
+          done++;
+          prog('');
+        });
+    });
+  });
+  chain.catch(function (e) { toast(e.message, 5000); }).then(function () {
+    onUp.busy = false;
+    renderOnRes();
+  });
+}
+
+function readOnPdf(file) {
+  return file.arrayBuffer().then(function (buf) {
+    return pdfjsLib.getDocument({ data: buf }).promise;
+  }).then(function (doc) {
+    var pages = [], chain = Promise.resolve();
+    for (var p = 1; p <= doc.numPages; p++) {
+      (function (p) {
+        chain = chain.then(function () { return doc.getPage(p); })
+          .then(function (page) { return page.getTextContent(); })
+          .then(function (tc) { pages.push(onLinesOf(tc.items)); });
+      })(p);
+    }
+    return chain.then(function () { doc.destroy(); return onParse(pages); });
+  });
+}
+
+function normUniv(s) { return String(s || '').replace(/\s/g, '').replace(/대학교/g, '대').toLowerCase(); }
+function normPlain(s) { return String(s || '').replace(/\s/g, '').toLowerCase(); }
+
+/** 파일 하나를 지원 대학에 연결한다 → 결과 표의 한 줄 */
+function matchOnFile(name, qs, err) {
+  var info = onFileInfo(name);
+  var row = { file: name, qs: qs, appId: '', options: [], note: '', err: err || (qs.length ? '' : '질문을 찾지 못했습니다. 면접ON 보고서가 맞는지 확인하세요.') };
+  if (onUp.target) {
+    var a = appById(onUp.target), s = studentOf(sKey(a.klass, a.no));
+    row.appId = a.id; row.options = [a];
+    if (info && (normPlain(info.name) !== normPlain(s.name) || normUniv(info.univ) !== normUniv(a.univ))) row.note = '파일 이름의 학생·대학이 이 지원과 다릅니다. 맞는 파일인지 확인하세요.';
+    return row;
+  }
+  if (!info) { row.note = '파일 이름이 "이름 면접ON_대학_모집단위.pdf" 형태가 아닙니다.'; return row; }
+  data.students.filter(function (s) { return normPlain(s.name) === normPlain(info.name); }).forEach(function (s) {
+    row.options = row.options.concat(appsOf(sKey(s.klass, s.no)));
+  });
+  var univ = row.options.filter(function (a) { return normUniv(a.univ) === normUniv(info.univ); });
+  var exact = univ.filter(function (a) { return normPlain(a.major) === normPlain(info.major); });
+  if (exact.length === 1) row.appId = exact[0].id;
+  else if (exact.length > 1) row.note = '같은 이름의 학생이 같은 곳에 지원했습니다. 직접 고르세요.';
+  else if (univ.length === 1) { row.appId = univ[0].id; row.note = '모집단위 표기가 달라 대학명으로 연결했습니다. 확인하세요.'; }
+  else row.note = row.options.length ? '맞는 지원 대학을 찾지 못했습니다. 직접 고르세요.' : info.name + ' 학생을 찾지 못했습니다.';
+  return row;
+}
+
+function appLabel(a) { return a.klass + '-' + a.no + ' ' + a.name + ' · ' + a.univ + ' ' + a.major; }
+
+function renderOnRes() {
+  var rows = onUp.rows, uses = {};
+  rows.forEach(function (r) { if (r.appId && !r.err) uses[r.appId] = (uses[r.appId] || 0) + 1; });
+  $('onResCard').classList.toggle('hidden', !rows.length);
+  $('onResBody').innerHTML = rows.map(function (r, i) {
+    var sel = r.options.length
+      ? '<select onchange="onUp.rows[' + i + '].appId=this.value;renderOnRes()"' + (onUp.target ? ' disabled' : '') + '><option value="">(저장 안 함)</option>' +
+        r.options.map(function (a) { return '<option value="' + a.id + '"' + (a.id === r.appId ? ' selected' : '') + '>' + esc(appLabel(a)) + '</option>'; }).join('') + '</select>'
+      : '<span class="muted">—</span>';
+    var st = r.err ? '<span class="pill bad">' + esc(r.err) + '</span>'
+      : !r.appId ? '<span class="pill warn">연결 안 됨</span>'
+      : uses[r.appId] > 1 ? '<span class="pill warn">같은 지원에 파일 ' + uses[r.appId] + '개</span>'
+      : onqOf(r.appId) ? '<span class="pill warn">바꿔 넣음</span>'
+      : '<span class="pill ok">새로</span>';
+    return '<tr><td class="file">' + esc(r.file) + '</td><td>' + sel + '</td><td class="num">' + r.qs.length + '</td>' +
+      '<td>' + st + (r.note ? '<div class="small muted" style="margin-top:4px">' + esc(r.note) + '</div>' : '') + '</td></tr>';
+  }).join('');
+  var ready = onReadyRows();
+  $('onResCount').textContent = rows.length + '개';
+  $('onResNote').textContent = ready.length < rows.length ? '연결 안 된 파일 ' + (rows.length - ready.length) + '개는 저장하지 않습니다.' : '';
+  $('onSaveBtn').disabled = !ready.length;
+  $('onSaveBtn').innerHTML = ic('check') + (ready.length ? ready.length + '개 파일 질문 저장' : '저장할 파일 없음');
+}
+function onReadyRows() { return onUp.rows.filter(function (r) { return r.appId && !r.err && r.qs.length; }); }
+
+function saveOnUpload() {
+  var ready = onReadyRows();
+  if (!ready.length) return;
+  var items = ready.map(function (r) {
+    return { appId: r.appId, file: r.file, questions: r.qs.map(function (q) { return [q.area, q.subj, q.text]; }) };
+  });
+  onUp.busy = true;
+  $('onSaveBtn').disabled = true;
+  // 한 번에 너무 크게 보내지 않도록 15개씩 나눠 저장한다
+  var chain = Promise.resolve(true), saved = 0;
+  for (var i = 0; i < items.length; i += 15) {
+    (function (part) {
+      chain = chain.then(function (ok) {
+        if (!ok) return false;
+        return api('saveOnQuestions', { author: me(), items: part }).then(function (res) {
+          if (!res.ok) { toast(res.msg, 5000); return false; }
+          part.forEach(function (it) { delete onCache[it.appId]; });
+          saved += res.saved;
+          return true;
+        });
+      });
+    })(items.slice(i, i + 15));
+  }
+  chain.then(function (ok) {
+    onUp.busy = false;
+    if (!ok) { renderOnRes(); return; }
+    toast(saved + '개 지원 대학에 면접ON 질문을 저장했습니다. 학생 화면에 바로 보입니다.', 4000);
+    closeOnUpload();
+  });
+}
+
+/* ── 면접ON PDF → 질문 목록 ── */
+
+/** pdf.js getTextContent() 결과를 줄 목록으로 */
+function onLinesOf(items) {
+  var lines = [], cur = '', lastY = null;
+  items.forEach(function (it) {
+    var y = it.transform ? it.transform[5] : lastY;
+    if (lastY !== null && y !== null && Math.abs(y - lastY) > 2 && cur.trim()) { lines.push(cur.trim()); cur = ''; }
+    cur += it.str;
+    if (it.hasEOL) { if (cur.trim()) lines.push(cur.trim()); cur = ''; }
+    lastY = y;
+  });
+  if (cur.trim()) lines.push(cur.trim());
+  return lines;
+}
+
+var ON_AREAS = { '공통질문': '', '성적': '성적', '출결': '출결', '리더십': '리더십', '자율활동': '자율', '동아리활동': '동아리', '진로활동': '진로', '세부능력 및 특기사항': '세특', '행동특성 및 종합의견': '행특' };
+var ON_HEAD_RE = /^\d{1,2}\s+(공통질문|성적|출결|리더십|자율활동|동아리활동|진로활동|세부능력 및 특기사항|행동특성 및 종합의견)$/;
+var ON_FOLLOW_RE = /연계 질문/;
+var ON_STOP_RE = /^(Q\s|\d+\/\d+$|여기서 이런 질문|APPENDIX)/;
+// 질문이 끝나는 모양: 물음표, 또는 "~좋겠습니다. / 감사하겠습니다. / 궁금합니다. / ~세요." (뒤에 과목 괄호가 붙을 수 있음)
+var ON_END_RE = /(\?|(좋겠습|감사하겠습|궁금합)니다\.|세요\.)\s*(\((?:[^()]|\([^()]*\))*\))?\s*$/;
+var ON_SUBJ_RE = /\s*\(((?:[^()]|\([^()]*\))*)\)\s*$/;
+
+/** 긴 존댓말 끝맺음을 줄인다: "자세히 말씀해 주실 수 있을까요?" → "말씀해 주세요." */
+function onShorten(t) {
+  return t.replace(/\s*(?:구체적으로|자세히)?\s*(말씀|설명)해\s*주실\s*수\s*있을까요\s*\?/g, ' $1해 주세요.')
+    .replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * 쪽별 줄 목록 → [{ area, subj, text }]
+ * - "7 자율활동" 같은 영역 제목 아래의 "Q …" 문장만 모은다. (공통질문·안내 글은 버림)
+ *   영역 제목이 없는 이어지는 쪽은 앞 쪽의 영역을 따른다.
+ * - "○○ 연계 질문" 쪽은 앞 질문을 되풀이하므로 건너뛴다. 꼬리질문도 가져오지 않는다.
+ * - 한 질문이 여러 줄이면 질문이 끝나는 모양이 나올 때까지 잇는다.
+ *   끝난 뒤에도 다음 줄이 질문처럼 끝나면("또한 ~좋겠습니다.") 덧붙임으로 보고 잇는다.
+ */
+function onParse(pages) {
+  var out = [], seen = {}, area = '';
+  pages.forEach(function (lines) {
+    var follow = false;
+    for (var i = 0; i < lines.length; i++) {
+      var l = lines[i], m = l.match(ON_HEAD_RE);
+      if (m) { area = ON_AREAS[m[1]]; continue; }
+      if (ON_FOLLOW_RE.test(l) && !/^Q\s/.test(l)) { follow = true; continue; }
+      if (follow || !area || !/^Q\s/.test(l)) continue;
+      var text = l.replace(/^Q\s+/, ''), n = 0;
+      while (i + 1 < lines.length && n < 6) {
+        var next = lines[i + 1];
+        if (ON_STOP_RE.test(next) || ON_HEAD_RE.test(next) || ON_FOLLOW_RE.test(next)) break;
+        if (ON_END_RE.test(text) && !ON_END_RE.test(next)) break;
+        text += ' ' + next; i++; n++;
+      }
+      var subj = '', sm = area === '세특' && text.match(ON_SUBJ_RE);
+      if (sm) { subj = sm[1].replace(/\s+/g, ' ').trim(); text = text.replace(ON_SUBJ_RE, ''); }
+      text = onShorten(text);
+      var key = text.replace(/\s/g, '');
+      if (!text || seen[key]) continue;
+      seen[key] = true;
+      out.push({ area: area, subj: subj, text: text });
+    }
+  });
+  return out;
+}
+
+/** "김지후 면접ON_건국대학교_KU자유전공학부.pdf" → { name, univ, major } (맥에서 만든 파일 이름도 읽도록 NFC로 맞춤) */
+function onFileInfo(fileName) {
+  var m = String(fileName).normalize('NFC').match(/^(.+?)\s*면접\s*ON\s*_(.+?)_(.+?)\.pdf$/i);
+  return m ? { name: m[1].trim(), univ: m[2].trim(), major: m[3].trim() } : null;
+}
+
+/* ── 4. 면접 시작 ── */
+function teacherChecks(boxId, name, checked) {
+  $(boxId).innerHTML = data.teachers.length ? data.teachers.map(function (t) {
+    return '<label class="chip"><input type="checkbox" name="' + name + '" value="' + esc(t) + '"' + (checked.indexOf(t) >= 0 ? ' checked' : '') + '>' +
+      ic('check') + esc(t) + '</label>';
+  }).join('') : '<span class="muted small">시트의 교사 탭에 선생님 이름을 넣어 주세요.</span>';
+}
+function checkedValues(name) {
+  return Array.prototype.slice.call(document.querySelectorAll('input[name="' + name + '"]:checked')).map(function (i) { return i.value; });
+}
+
+function openStart() {
+  var a = appById(cur.appId), s = studentOf(sKey(a.klass, a.no));
+  $('startTitle').textContent = s.name + ' · ' + a.univ + ' ' + a.major;
+  var last = [];
+  try { last = JSON.parse(lsGet(LS.teachers) || '[]'); } catch (e) {}
+  if (!last.length && me()) last = [me()];
+  teacherChecks('startTeachers', 'stT', last);
+  $('startMsg').textContent = '';
+  go('start');
+}
+
+function startInterview() {
+  var teachers = checkedValues('stT');
+  if (!teachers.length) { $('startMsg').textContent = '면접 교사를 한 명 이상 고르세요.'; return; }
+  lsSet(LS.teachers, JSON.stringify(teachers));
+  var type = document.querySelector('input[name="itype"]:checked').value;
+  var a = appById(cur.appId), s = studentOf(sKey(a.klass, a.no));
+  run = { type: type, teachers: teachers, limit: TYPE_MIN[type] * 60000, elapsed: 0, startedAt: Date.now(), paused: false, asked: {} };
+  $('runTitle').textContent = s.name + ' · ' + a.univ;
+  $('runSub').textContent = a.major + ' · ' + type + ' 기반 ' + TYPE_MIN[type] + '분';
+  $('ringBar').style.strokeDasharray = RING_C;
+  setPauseBtn();
+  renderRunQs();
+  go('run');
+  dirty = true;
+  tick();
+  run.timer = setInterval(tick, 250);
+}
+
+function elapsed() { return run.elapsed + (run.paused ? 0 : Date.now() - run.startedAt); }
+function fmtMs(ms) {
+  var s = Math.floor(Math.abs(ms) / 1000);
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+function tick() {
+  var left = run.limit - elapsed();
+  $('timer').textContent = left >= 0 ? fmtMs(left + 999) : '+' + fmtMs(left);
+  $('timerState').textContent = run.paused ? '일시정지' : left < 0 ? '시간 초과' : left <= 60000 ? '1분 남음' : '남은 시간';
+  var frac = left < 0 ? 1 : 1 - left / run.limit;
+  $('ringBar').style.strokeDashoffset = left < 0 ? 0 : RING_C * frac;
+  $('timerBox').className = 'card timer-card' + (left < 0 ? ' over' : left <= 60000 ? ' warn' : '');
+}
+function setPauseBtn() { $('pauseBtn').innerHTML = run.paused ? ic('play') + '계속' : ic('pause') + '일시정지'; }
+function togglePause() {
+  if (run.paused) { run.startedAt = Date.now(); run.paused = false; }
+  else { run.elapsed = elapsed(); run.paused = true; }
+  setPauseBtn();
+  tick();
+}
+
+function checkRow(q, on, onchange) {
+  return '<label class="checkq"><input type="checkbox"' + (on ? ' checked' : '') + ' onchange="' + onchange + '">' +
+    '<span class="box">' + ic('check') + '</span><span class="qt">' + qTag(q) + esc(q.text) + '</span></label>';
+}
+
+function renderRunQs() {
+  var qs = questionsOf(cur.appId);
+  $('runQs').innerHTML = qs.length ? qs.map(function (q) {
+    return checkRow(q, !!run.asked[q.id], 'toggleAsked(\'' + q.id + '\', this)');
+  }).join('') : '<div class="empty">' + ic('chat') + '예상 질문이 없습니다. 아래에 즉석 질문을 적을 수 있습니다.</div>';
+  $('askedCount').textContent = '물어본 질문 ' + Object.keys(run.asked).length + ' / ' + qs.length;
+  renderRunOn();
+}
+
+/* 면접 화면의 면접ON 목록: 처음엔 접어 두고, 펼칠 때 서버에서 받아 온다. */
+var onCache = {}; // 지원ID → 면접ON 질문 목록
+function renderRunOn() {
+  var o = onqOf(cur.appId);
+  $('runOnBox').classList.toggle('hidden', !o);
+  if (!o) return;
+  var open = !!run.onOpen;
+  $('runOnIcon').style.transform = open ? 'rotate(180deg)' : '';
+  $('runOnLabel').innerHTML = '면접ON 질문 ' + o.n + '개 ' + (open ? '접기' : '펼쳐 보기') +
+    ' <span class="muted">· 학생이 고른 ' + o.picked + '개는 위 목록에 있음</span>';
+  $('runOnList').classList.toggle('hidden', !open);
+  if (!open) return;
+  var list = onCache[cur.appId];
+  if (!list) { $('runOnList').innerHTML = '<div class="empty">불러오는 중…</div>'; return; }
+  var have = {};
+  questionsOf(cur.appId).forEach(function (q) { have[q.text.trim()] = true; });
+  var area = '';
+  $('runOnList').innerHTML = list.map(function (q, i) {
+    var head = q.area !== area ? '<div class="on-area">' + esc(q.area || '기타') + '</div>' : '';
+    area = q.area;
+    var got = have[q.text.trim()];
+    return head + '<div class="on-q' + (got ? ' have' : '') + '"><div class="t">' + (q.subj ? '<span class="subj">' + esc(q.subj) + '</span>' : '') + esc(q.text) + '</div>' +
+      (got ? '<span class="small">위 목록에 있음</span>' : '<button class="icon-btn" title="교사 질문으로 추가하고 물어본 질문으로 체크" onclick="askOn(' + i + ')">' + ic('plus') + '물어봄</button>') + '</div>';
+  }).join('');
+}
+function toggleRunOn() {
+  run.onOpen = !run.onOpen;
+  renderRunOn();
+  if (run.onOpen && !onCache[cur.appId]) {
+    var appId = cur.appId;
+    api('getOnQuestions', { appId: appId }).then(function (res) {
+      if (!res.ok) { toast(res.msg, 4000); return; }
+      onCache[appId] = res.questions;
+      if (run && cur.appId === appId) renderRunOn();
+    });
+  }
+}
+function askOn(i) {
+  var q = onCache[cur.appId][i];
+  api('addQuestions', { appId: cur.appId, author: me() || run.teachers[0], questions: [q.text], basis: q.basis }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    run.asked[res.ids[0]] = true;
+    renderRunQs();
+  });
+}
+function toggleAsked(id, el) {
+  if (el.checked) run.asked[id] = true; else delete run.asked[id];
+  $('askedCount').textContent = '물어본 질문 ' + Object.keys(run.asked).length + ' / ' + questionsOf(cur.appId).length;
+}
+function addQuick() {
+  var text = $('quickQ').value.trim();
+  if (!text) return;
+  api('addQuestions', { appId: cur.appId, author: me() || run.teachers[0], questions: [text] }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    $('quickQ').value = '';
+    run.asked[res.ids[0]] = true;
+    renderRunQs();
+  });
+}
+$('quickQ').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.isComposing) addQuick(); });
+
+function endInterview() {
+  if (!confirm('면접을 마치고 강평으로 넘어갈까요?')) return;
+  clearInterval(run.timer);
+  run.elapsed = elapsed(); run.paused = true;
+  fbEdit = { mode: 'new', asked: Object.assign({}, run.asked), type: run.type, teachers: run.teachers };
+  openFeedback('');
+}
+
+/* ── 6. 강평 ── */
+function openFeedback(text) {
+  var a = appById(cur.appId), s = studentOf(sKey(a.klass, a.no));
+  $('fbKicker').textContent = fbEdit.mode === 'new' ? '강평 작성' : '강평 수정';
+  $('fbTitle').textContent = s.name + ' · ' + a.univ + ' ' + a.major;
+  $('fbSub').textContent = fbEdit.mode === 'new'
+    ? fbEdit.type + ' 기반 · ' + fbEdit.teachers.join(', ') + ' · 면접 시간 ' + fmtMs(run.elapsed)
+    : '';
+  $('fbEditMeta').classList.toggle('hidden', fbEdit.mode === 'new');
+  if (fbEdit.mode === 'edit') {
+    document.querySelectorAll('input[name="fbType"]').forEach(function (r) { r.checked = r.value === fbEdit.type; });
+    teacherChecks('fbTeachers', 'fbT', fbEdit.teachers);
+  }
+  $('fbDate').value = fbEdit.date || today();
+  $('fbText').value = text;
+  $('interim').textContent = '';
+  $('fbMsg').textContent = '';
+  renderFbAsked();
+  go('fb');
+  dirty = true;
+}
+
+function openFeedbackEdit(id) {
+  var f = data.feedbacks.filter(function (x) { return x.id === id; })[0];
+  var asked = {};
+  f.asked.forEach(function (q) { asked[q] = true; });
+  fbEdit = { mode: 'edit', id: id, asked: asked, type: f.type, teachers: f.teachers.split(',').map(function (t) { return t.trim(); }).filter(Boolean), date: f.date };
+  openFeedback(f.text);
+}
+
+function renderFbAsked() {
+  var qs = questionsOf(cur.appId);
+  $('fbAsked').innerHTML = qs.length ? qs.map(function (q) {
+    return checkRow(q, !!fbEdit.asked[q.id], 'if(this.checked)fbEdit.asked[\'' + q.id + '\']=true;else delete fbEdit.asked[\'' + q.id + '\'];renderFbAskedCount()');
+  }).join('') : '<div class="empty">' + ic('chat') + '질문이 없습니다.</div>';
+  renderFbAskedCount();
+}
+function renderFbAskedCount() { $('fbAskedCount').textContent = Object.keys(fbEdit.asked).length + '개'; }
+
+function cancelFeedback() {
+  if (!confirm(fbEdit.mode === 'new' ? '강평을 저장하지 않고 나갈까요? 받아쓴 내용이 사라집니다.' : '수정을 취소할까요?')) return;
+  stopRec(); dirty = false; run = null;
+  go('app');
+}
+
+function saveFeedback(andPrint) {
+  stopRec();
+  var body = {
+    appId: cur.appId,
+    date: $('fbDate').value,
+    type: fbEdit.mode === 'new' ? fbEdit.type : (document.querySelector('input[name="fbType"]:checked') || {}).value,
+    teachers: fbEdit.mode === 'new' ? fbEdit.teachers : checkedValues('fbT'),
+    asked: Object.keys(fbEdit.asked),
+    text: $('fbText').value
+  };
+  if (!body.date) { $('fbMsg').textContent = '면접일을 넣어 주세요.'; return; }
+  if (!body.text.trim() && !confirm('강평 내용이 비어 있습니다. 그래도 저장할까요?')) return;
+  var action = fbEdit.mode === 'new' ? 'saveFeedback' : 'updateFeedback';
+  if (fbEdit.mode === 'edit') body.id = fbEdit.id;
+  api(action, body).then(function (res) {
+    if (!res.ok) { $('fbMsg').textContent = res.msg; return; }
+    dirty = false; run = null;
+    var id = res.id || fbEdit.id;
+    toast('저장했습니다. 학생 화면에 바로 보입니다.');
+    go('app');
+    if (andPrint) printFb(id, true);
+  });
+}
+
+/* ── 받아쓰기 (크롬 음성 인식) ── */
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+var rec = null, recOn = false;
+if (!SR) { $('noSpeech').classList.remove('hidden'); $('recBtn').disabled = true; }
+
+function toggleRec() { if (recOn) stopRec(); else startRec(); }
+
+function setRecUi(on, state) {
+  $('recBtn').classList.toggle('on', on);
+  $('recIcon').innerHTML = '<use href="#i-' + (on ? 'stop' : 'mic') + '"/>';
+  $('recLabel').textContent = on ? '녹음 중 — 누르면 정지' : '녹음 시작';
+  $('recState').textContent = state || (on ? '말하는 내용이 아래에 받아 적힙니다.' : '버튼을 누르고 말하면 아래에 글로 받아 적힙니다.');
+}
+
+function startRec() {
+  if (!SR) return;
+  recOn = true;
+  setRecUi(true);
+  rec = new SR();
+  rec.lang = 'ko-KR';
+  rec.continuous = true;
+  rec.interimResults = true;
+  rec.onresult = function (e) {
+    var interim = '';
+    for (var i = e.resultIndex; i < e.results.length; i++) {
+      var t = e.results[i][0].transcript;
+      if (e.results[i].isFinal) appendText(t); else interim += t;
+    }
+    $('interim').textContent = interim;
+  };
+  rec.onerror = function (e) {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      stopRec();
+      alert('마이크를 쓸 수 없습니다. 주소창 왼쪽 자물쇠 아이콘에서 마이크를 "허용"으로 바꿔 주세요.');
+    } else if (e.error === 'network') {
+      setRecUi(true, '인터넷 연결을 확인하세요. 다시 시도 중…');
+    }
+  };
+  // 말이 잠시 끊기면 인식이 저절로 멈춘다. 정지 버튼을 누르기 전까지 다시 켠다.
+  rec.onend = function () { if (recOn) setTimeout(function () { if (recOn) try { rec.start(); } catch (err) {} }, 250); };
+  try { rec.start(); } catch (err) {}
+}
+
+function stopRec() {
+  if (!recOn) return;
+  recOn = false;
+  try { rec.stop(); } catch (err) {}
+  var pending = $('interim').textContent.trim();
+  if (pending) appendText(pending);
+  $('interim').textContent = '';
+  setRecUi(false);
+}
+
+function appendText(t) {
+  t = t.trim(); if (!t) return;
+  var ta = $('fbText');
+  var v = ta.value;
+  ta.value = v + (v && !/\s$/.test(v) ? ' ' : '') + t;
+  ta.scrollTop = ta.scrollHeight;
+}
+
+/* ── 인쇄 · PDF ── */
+function printFb(id, asPdf) {
+  var f = feedbacksOf(cur.appId).filter(function (x) { return x.id === id; })[0];
+  if (!f) return;
+  var a = appById(f.appId), s = studentOf(sKey(a.klass, a.no));
+  var asked = askedQuestions(f);
+  $('printArea').innerHTML =
+    '<div class="head"><h1>모의면접 강평</h1><span>' + esc(f.date) + ' · ' + f.round + '차</span></div>' +
+    '<div class="info">' + esc(s.klass + '반 ' + s.no + '번 ' + s.name) + ' &nbsp;|&nbsp; ' + esc(a.univ + ' ' + a.major) +
+    ' &nbsp;|&nbsp; ' + esc(f.type) + ' 기반 &nbsp;|&nbsp; ' + esc(f.teachers) + '</div>' +
+    '<h2>■ 오늘 받은 질문</h2>' +
+    (asked.length ? '<ol>' + asked.map(function (q) { return '<li>(' + (q.by === '학생' ? '학생' : '교사') + ') ' + esc(q.text) + '</li>'; }).join('') + '</ol>' : '<p>(기록 없음)</p>') +
+    '<h2>■ 강평</h2><div class="fbtext">' + esc(f.text || '(내용 없음)') + '</div>';
+  // PDF로 저장할 때 파일 이름으로 쓰인다.
+  var oldTitle = document.title;
+  document.title = s.klass + '-' + String(s.no).padStart(2, '0') + '_' + s.name + '_' + a.univ + '_' + f.date.replace(/-/g, '');
+  if (asPdf) toast('인쇄 창의 "대상"에서 [PDF로 저장]을 고르세요.', 5000);
+  setTimeout(function () {
+    window.print();
+    document.title = oldTitle;
+  }, asPdf ? 600 : 50);
+}
+
+/* ── 기타 ── */
+window.addEventListener('beforeunload', function (e) {
+  if (dirty) { e.preventDefault(); e.returnValue = ''; }
+});
+
+(function start() {
+  var saved = lsGet(LS.pw);
+  if (!saved) { go('lock'); return; }
+  pw = saved;
+  api('auth').then(function (res) {
+    if (!res.ok) { pw = ''; lsSet(LS.pw, ''); go('lock'); return; }
+    go('list');
+  });
+})();
+</script>
+</body>
+</html>
