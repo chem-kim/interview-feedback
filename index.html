@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>모의면접 강평</title>
+<title>모의면접 강평 (요약)</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
   :root {
@@ -167,6 +167,10 @@
   .hint svg.i { width: 15px; height: 15px; margin-top: 2px; }
 
   .timeline { position: relative; }
+  .sumbox label { display: block; font-size: 13px; font-weight: 700; color: var(--sub); margin: 14px 0 6px; }
+  .sumbox label:first-child { margin-top: 4px; }
+  textarea.sum { min-height: 88px; }
+  .openrow { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding: 12px 14px; border-radius: 10px; background: #fafbfe; border: 1px solid var(--line2); flex-wrap: wrap; }
   .fb { position: relative; padding: 0 0 22px 26px; }
   .fb::before { content: ""; position: absolute; left: 7px; top: 22px; bottom: 0; width: 2px; background: var(--line); }
   .fb:last-child { padding-bottom: 0; }
@@ -298,7 +302,8 @@
     #printArea .head { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #000; padding-bottom: 6px; }
     #printArea .info { margin: 10px 0 18px; }
     #printArea h2 { font-size: 13pt; margin: 18px 0 6px; }
-    #printArea ol { margin: 0; padding-left: 22px; }
+    #printArea ol, #printArea ul { margin: 0; padding-left: 22px; }
+    #printArea ul li { margin: 3px 0; }
     #printArea li { margin-bottom: 4px; }
     #printArea .fbtext { white-space: pre-wrap; }
   }
@@ -327,6 +332,7 @@
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
   <symbol id="i-doc" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></symbol>
   <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></symbol>
+  <symbol id="i-magic" viewBox="0 0 24 24"><path d="m5 19 9-9M13 4l1 2 2 1-2 1-1 2-1-2-2-1 2-1zM18 11l.7 1.3 1.3.7-1.3.7L18 15l-.7-1.3-1.3-.7 1.3-.7zM6.5 4.5l.5 1 1 .5-1 .5-.5 1-.5-1-1-.5 1-.5z"/></symbol>
   <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M17 6l3 3M14 9l2 2"/></symbol>
@@ -337,7 +343,7 @@
 
 <div class="topbar hidden" id="topbar">
   <div class="in">
-    <div class="brand" onclick="go('list')"><span class="logo"><svg class="i"><use href="#i-mic"/></svg></span>모의면접 강평</div>
+    <div class="brand" onclick="go('list')"><span class="logo"><svg class="i"><use href="#i-mic"/></svg></span>모의면접 강평 <span style="font-weight:600;font-size:12px;color:var(--faint)">요약</span></div>
     <span class="me">사용 교사 <select id="meSelect" onchange="setMe(this.value)"></select></span>
     <button class="icon-btn" onclick="reload()" title="시트의 최신 자료 불러오기"><svg class="i"><use href="#i-refresh"/></svg>새로고침</button>
     <button class="icon-btn" onclick="lockOut()" title="비밀번호 화면으로 돌아가기"><svg class="i"><use href="#i-lock"/></svg>잠금</button>
@@ -564,6 +570,24 @@
       </div>
 
       <div class="card">
+        <div class="card-h"><h3>학생에게 줄 정리본</h3>
+          <span class="spacer"></span>
+          <button class="btn" id="sumBtn" onclick="summarize()"><svg class="i"><use href="#i-magic"/></svg>요약정리</button>
+        </div>
+        <p class="hint"><svg class="i"><use href="#i-info"/></svg>위 원문을 세 가지로 정리합니다. 원문은 학생에게 보이지 않습니다. 보낸 글은 무료 Gemini가 쓰므로, 이름·대학은 빼고 강평 본문만 보냅니다.</p>
+        <div class="sumbox">
+          <label>잘한 점</label>
+          <textarea id="fbGood" class="sum" placeholder="[요약정리]를 누르거나 직접 적으세요. 해당 없으면 비워 두세요."></textarea>
+          <label>고칠 점</label>
+          <textarea id="fbFix" class="sum" placeholder=""></textarea>
+          <label>다음 연습</label>
+          <textarea id="fbNext" class="sum" placeholder=""></textarea>
+        </div>
+        <label class="openrow"><input type="checkbox" id="fbOpen"> <b>학생에게 보이기</b>
+          <span class="muted small">켜야 학생 화면에 정리본이 나타납니다. 확인·수정한 뒤에 켜세요.</span></label>
+      </div>
+
+      <div class="card">
         <div class="card-h"><h3>물어본 질문</h3><span class="count" id="fbAskedCount"></span><span class="spacer"></span><span class="muted small">인쇄물에는 체크한 질문만 나옵니다</span></div>
         <div id="fbAsked"></div>
       </div>
@@ -585,7 +609,7 @@
 
 <script>
 /* ── 설정 ── */
-var API_URL = 'https://script.google.com/macros/s/AKfycbzDds3b2Ee3im2p2tdatFZrdt5o8yBwG-QwkczqaeFU1BRg6kXvLZxJLQwVqPcwYwhiJw/exec';
+var API_URL = 'https://script.google.com/macros/s/AKfycbyxvJlWTMBSl6AS_2G3q36W6HKBieROsjZmLrcsDGQECROxpSippEsj4I3S0S-z8gosBA/exec';
 var TYPE_MIN = { '서류': 10, '제시문': 15 };
 var ON_MAX = 10; // 학생이 면접ON 질문에서 고를 수 있는 개수 (서버 ON_PICK_MAX와 같게)
 var LS = { pw: 'iv_pw', me: 'iv_me', teachers: 'iv_last_teachers' };
@@ -892,13 +916,18 @@ function renderApp() {
     var asked = askedQuestions(f);
     return '<div class="fb"><span class="dot"></span><div class="h"><b>' + f.round + '차</b><span class="muted">' + esc(f.date) + '</span>' +
       '<span class="pill">' + esc(f.type) + '</span>' +
+      (f.open ? '<span class="pill ok">' + ic('check') + '학생 공개</span>' : '<span class="pill warn">비공개</span>') +
       '<div class="acts"><button class="icon-btn" title="인쇄" onclick="printFb(\'' + f.id + '\', false)">' + ic('print') + '</button>' +
       '<button class="icon-btn" title="PDF 저장" onclick="printFb(\'' + f.id + '\', true)">' + ic('file') + '</button>' +
       '<button class="icon-btn" title="수정" onclick="openFeedbackEdit(\'' + f.id + '\')">' + ic('edit') + '</button>' +
       '<button class="icon-btn bad" title="삭제" onclick="delFb(\'' + f.id + '\')">' + ic('trash') + '</button></div></div>' +
       (f.teachers ? '<div class="small muted" style="margin-top:2px">' + esc(f.teachers) + '</div>' : '') +
       (asked.length ? '<div class="asked"><div class="t">물어본 질문 ' + asked.length + '</div><ol>' + asked.map(function (q) { return '<li>' + esc(q.text) + '</li>'; }).join('') + '</ol></div>' : '') +
-      '<div class="text">' + esc(f.text || '(강평 내용 없음)') + '</div></div>';
+      '<div class="text">' + esc(f.text || '(강평 내용 없음)') + '</div>' +
+      '<div class="small muted" style="margin-top:6px">' +
+      (f.open ? ic('check') + '학생에게 보이는 정리본: ' : ic('info') + '학생에게 안 보임 · 정리본: ') +
+      esc(SUMMARY_ITEMS.filter(function (it) { return String(f[it[0]] || '').trim(); }).map(function (it) { return it[1]; }).join(', ') || '없음') +
+      '</div></div>';
   }).join('') : '<div class="empty">' + ic('mic') + '아직 모의면접 강평이 없습니다.</div>';
   updateBulkCount();
   renderOnBox(a);
@@ -1488,6 +1517,10 @@ function openFeedback(text) {
   }
   $('fbDate').value = fbEdit.date || today();
   $('fbText').value = text;
+  $('fbGood').value = fbEdit.good || '';
+  $('fbFix').value = fbEdit.fix || '';
+  $('fbNext').value = fbEdit.next || '';
+  $('fbOpen').checked = !!fbEdit.open;
   $('interim').textContent = '';
   $('fbMsg').textContent = '';
   renderFbAsked();
@@ -1499,7 +1532,8 @@ function openFeedbackEdit(id) {
   var f = data.feedbacks.filter(function (x) { return x.id === id; })[0];
   var asked = {};
   f.asked.forEach(function (q) { asked[q] = true; });
-  fbEdit = { mode: 'edit', id: id, asked: asked, type: f.type, teachers: f.teachers.split(',').map(function (t) { return t.trim(); }).filter(Boolean), date: f.date };
+  fbEdit = { mode: 'edit', id: id, asked: asked, type: f.type, teachers: f.teachers.split(',').map(function (t) { return t.trim(); }).filter(Boolean), date: f.date,
+    good: f.good, fix: f.fix, next: f.next, open: f.open };
   openFeedback(f.text);
 }
 
@@ -1526,19 +1560,51 @@ function saveFeedback(andPrint) {
     type: fbEdit.mode === 'new' ? fbEdit.type : (document.querySelector('input[name="fbType"]:checked') || {}).value,
     teachers: fbEdit.mode === 'new' ? fbEdit.teachers : checkedValues('fbT'),
     asked: Object.keys(fbEdit.asked),
-    text: $('fbText').value
+    text: $('fbText').value,
+    good: $('fbGood').value,
+    fix: $('fbFix').value,
+    next: $('fbNext').value,
+    open: $('fbOpen').checked
   };
   if (!body.date) { $('fbMsg').textContent = '면접일을 넣어 주세요.'; return; }
   if (!body.text.trim() && !confirm('강평 내용이 비어 있습니다. 그래도 저장할까요?')) return;
+  if (body.open && !(body.good.trim() || body.fix.trim() || body.next.trim())) {
+    $('fbMsg').textContent = '정리본이 비어 있어 학생에게 보일 내용이 없습니다. [요약정리]를 누르거나 직접 적어 주세요.';
+    return;
+  }
   var action = fbEdit.mode === 'new' ? 'saveFeedback' : 'updateFeedback';
   if (fbEdit.mode === 'edit') body.id = fbEdit.id;
   api(action, body).then(function (res) {
     if (!res.ok) { $('fbMsg').textContent = res.msg; return; }
     dirty = false; run = null;
     var id = res.id || fbEdit.id;
-    toast('저장했습니다. 학생 화면에 바로 보입니다.');
+    toast(body.open ? '저장했습니다. 정리본이 학생 화면에 바로 보입니다.' : '저장했습니다. 아직 학생에게는 보이지 않습니다.');
     go('app');
     if (andPrint) printFb(id, true);
+  });
+}
+
+/* ── 요약정리 (서버가 Gemini를 부른다) ── */
+function summarize() {
+  var text = $('fbText').value.trim();
+  if (!text) { $('fbMsg').textContent = '정리할 강평 원문이 없습니다.'; return; }
+  var filled = $('fbGood').value.trim() || $('fbFix').value.trim() || $('fbNext').value.trim();
+  if (filled && !confirm('이미 적어 둔 정리본을 요약정리 결과로 덮어씁니다. 계속할까요?')) return;
+  var btn = $('sumBtn');
+  btn.disabled = true;
+  $('fbMsg').textContent = '정리하는 중…';
+  api('summarizeFeedback', { text: text }).then(function (res) {
+    btn.disabled = false;
+    if (!res.ok) { $('fbMsg').textContent = res.msg; return; }
+    $('fbGood').value = res.good || '';
+    $('fbFix').value = res.fix || '';
+    $('fbNext').value = res.next || '';
+    var empty = ['잘한 점', '고칠 점', '다음 연습'].filter(function (n, i) { return !([res.good, res.fix, res.next][i] || '').trim(); });
+    $('fbMsg').textContent = '정리했습니다. 확인하고 고친 뒤 저장하세요.' +
+      (empty.length ? ' (강평에 내용이 없어 비워 둔 항목: ' + empty.join(', ') + ')' : '');
+  }, function () {
+    btn.disabled = false;
+    $('fbMsg').textContent = '요약정리에 실패했습니다. 인터넷 연결을 확인하고 다시 눌러 보세요.';
   });
 }
 
@@ -1603,6 +1669,26 @@ function appendText(t) {
   ta.scrollTop = ta.scrollHeight;
 }
 
+/* 인쇄물에는 정리본만 나간다. 받아쓴 원문은 교사만 본다. (2026-09-23 결정) */
+var SUMMARY_ITEMS = [['good', '잘한 점'], ['fix', '고칠 점'], ['next', '다음 연습']];
+
+/* 정리본은 한 줄에 한 문장씩 들어 있다. 예전에 '- '로 저장된 줄도 받아 준다. */
+function sumLines(v) {
+  return String(v || '').split(/\r?\n/)
+    .map(function (t) { return t.replace(/^\s*[-–—•·*]\s*/, '').trim(); })
+    .filter(Boolean);
+}
+
+function printSummary(f) {
+  var html = SUMMARY_ITEMS.filter(function (it) { return String(f[it[0]] || '').trim(); })
+    .map(function (it) {
+      return '<h2>■ ' + it[1] + '</h2><ul>' +
+        sumLines(f[it[0]]).map(function (line) { return '<li>' + esc(line) + '</li>'; }).join('') + '</ul>';
+    })
+    .join('');
+  return html || '<h2>■ 강평</h2><div class="fbtext">(정리본이 아직 없습니다)</div>';
+}
+
 /* ── 인쇄 · PDF ── */
 function printFb(id, asPdf) {
   var f = feedbacksOf(cur.appId).filter(function (x) { return x.id === id; })[0];
@@ -1615,7 +1701,7 @@ function printFb(id, asPdf) {
     ' &nbsp;|&nbsp; ' + esc(f.type) + ' 기반 &nbsp;|&nbsp; ' + esc(f.teachers) + '</div>' +
     '<h2>■ 오늘 받은 질문</h2>' +
     (asked.length ? '<ol>' + asked.map(function (q) { return '<li>(' + (q.by === '학생' ? '학생' : '교사') + ') ' + esc(q.text) + '</li>'; }).join('') + '</ol>' : '<p>(기록 없음)</p>') +
-    '<h2>■ 강평</h2><div class="fbtext">' + esc(f.text || '(내용 없음)') + '</div>';
+    printSummary(f);
   // PDF로 저장할 때 파일 이름으로 쓰인다.
   var oldTitle = document.title;
   document.title = s.klass + '-' + String(s.no).padStart(2, '0') + '_' + s.name + '_' + a.univ + '_' + f.date.replace(/-/g, '');
