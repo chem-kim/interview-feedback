@@ -267,6 +267,13 @@
   table.onres td.file { max-width: 280px; word-break: break-all; color: var(--sub); font-size: 13px; }
   table.onres select { padding: 7px 10px; max-width: 320px; }
   .pill.bad { background: var(--bad-soft); color: var(--bad); }
+  /* 면접ON 저장 완료 알림 */
+  .done-banner { display: flex; align-items: center; gap: 14px; background: var(--ok-soft); color: var(--ok); border: 1px solid currentColor;
+    border-radius: 14px; padding: 16px 20px; margin-bottom: 16px; }
+  .done-banner .big { width: 34px; height: 34px; border-radius: 50%; background: var(--ok); color: #fff; display: grid; place-items: center; flex: none; }
+  .done-banner .big svg.i { width: 20px; height: 20px; }
+  .done-banner b { display: block; font-size: 16px; }
+  .done-banner span { font-size: 13.5px; }
   .onsum { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .on-toggle { width: 100%; display: flex; align-items: center; gap: 8px; margin-top: 14px; padding: 11px 12px; border: 1px dashed #cfd3ef; border-radius: 10px;
     background: #fafaff; color: var(--pri-ink); font-weight: 700; cursor: pointer; }
@@ -288,6 +295,11 @@
   .loading::before { content: ""; position: absolute; top: 0; left: -40%; width: 40%; height: 100%;
     background: linear-gradient(90deg, transparent, var(--pri), var(--pri-2), transparent); animation: slide 1s infinite ease-in-out; }
   @keyframes slide { to { left: 100%; } }
+  /* 서버와 주고받는 중임을 알리는 알림 (위쪽 가운데) */
+  .busy-pill { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 51; display: flex; align-items: center; gap: 9px;
+    background: #151a2d; color: #fff; padding: 9px 16px; border-radius: 999px; font-size: 13.5px; font-weight: 500; box-shadow: var(--sh-lg); }
+  .spin { width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, .35); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; flex: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   body.busy { cursor: progress; }
   body.busy main { pointer-events: none; }
 
@@ -453,6 +465,7 @@
     <div class="page-h">
       <div><h2>면접ON PDF 올리기</h2><div class="sub" id="onSub"></div></div>
     </div>
+    <div class="done-banner hidden" id="onDone"></div>
     <div class="card">
       <label class="drop" id="onDrop">
         <input type="file" id="onFile" accept=".pdf,application/pdf" multiple hidden>
@@ -606,6 +619,7 @@
 <div id="printArea"></div>
 <div class="toast hidden" id="toast"></div>
 <div class="loading hidden" id="loading"></div>
+<div class="busy-pill hidden" id="busyPill"><span class="spin"></span><span id="busyText">처리 중…</span></div>
 
 <script>
 /* ── 설정 ── */
@@ -637,10 +651,18 @@ function toast(msg, ms) {
   clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.add('hidden'); }, ms || 2500);
 }
 var busy = 0;
-function loading(on) {
+function loading(on, text) {
   busy += on ? 1 : -1;
   $('loading').classList.toggle('hidden', busy <= 0);
   document.body.classList.toggle('busy', busy > 0);
+  // 위쪽 얇은 막대만으로는 잘 안 보여서, 0.4초 넘게 걸리면 '처리 중' 알림을 띄운다
+  clearTimeout(loading._t);
+  if (busy > 0) {
+    if (on) $('busyText').textContent = text || '처리 중…';
+    loading._t = setTimeout(function () { $('busyPill').classList.remove('hidden'); }, 400);
+  } else {
+    $('busyPill').classList.add('hidden');
+  }
 }
 
 /** 이름으로 정해지는 아바타 색 (같은 학생은 늘 같은 색) */
@@ -652,24 +674,36 @@ function avatar(name, cls) {
 }
 
 /* ── 서버 ── */
-function api(action, body) {
-  body = Object.assign({ action: action, pw: pw }, body || {});
-  loading(true);
+var BUSY_TEXT = {
+  auth: '로그인하는 중…', loadAll: '최신 자료를 불러오는 중…',
+  saveFeedback: '강평을 저장하는 중…', updateFeedback: '강평을 저장하는 중…', deleteFeedback: '삭제하는 중…',
+  summarizeFeedback: 'AI가 정리하는 중…',
+  addQuestions: '질문을 넣는 중…', updateQuestion: '질문을 저장하는 중…', deleteQuestion: '삭제하는 중…',
+  saveOnQuestions: '면접ON 질문을 저장하는 중…', deleteOnQuestions: '삭제하는 중…', getOnQuestions: '질문을 불러오는 중…'
+};
+/** quiet: 미리 받아 두는 요청. 처리 중 표시를 띄우지 않고 화면도 막지 않는다. */
+function api(action, body, quiet) {
+  // partial: 쓰기 뒤에 바뀐 부분만 받는다 (setData가 부분 자료를 합칠 줄 안다)
+  body = Object.assign({ action: action, pw: pw, partial: true }, body || {});
+  if (!quiet) loading(true, BUSY_TEXT[action]);
   // Content-Type을 지정하지 않으면 text/plain으로 가서 CORS 사전 요청 없이 앱스 스크립트에 닿는다.
   return fetch(API_URL, { method: 'POST', body: JSON.stringify(body) })
     .then(function (r) { return r.json(); })
     .catch(function (e) { return { ok: false, msg: '연결 오류: ' + e.message }; })
     .then(function (res) {
-      loading(false);
+      if (!quiet) loading(false);
       if (res.needLogin && action !== 'auth') { lockOut(res.msg); return new Promise(function () {}); }
       // 비번 확인·저장 결과에는 전체 자료(data)가 함께 온다 → 다시 불러오는 호출이 필요 없다.
-      if (res.ok && res.data) setData(res.data);
+      if (res.data) setData(res.data); // 오류일 때도 서버가 최신 자료를 붙여 보내면 화면을 맞춘다
       return res;
     });
 }
 
+/** 서버가 보낸 부분만 바꾼다. 쓰기 뒤에는 바뀐 부분(예: 강평·질문)만 온다. */
 function setData(d) {
-  data = d;
+  ['teachers', 'students', 'apps', 'questions', 'feedbacks', 'onq'].forEach(function (k) {
+    if (d[k]) data[k] = d[k];
+  });
   renderMe();
   if (!$('v-list').classList.contains('hidden')) { renderFilters(); renderList(); }
 }
@@ -936,6 +970,8 @@ function renderApp() {
 
 function renderOnBox(a) {
   var o = onqOf(a.id);
+  // 올린 질문이 있으면 화면을 여는 김에 미리 받아 둔다 → [펼쳐서 교사 질문으로 넣기]를 누르면 바로 보인다
+  if (o) loadOn(a.id, true);
   $('onBox').innerHTML = o
     ? '<div class="onsum"><span class="pill ok">' + ic('check') + '질문 ' + o.n + '개</span>' +
       '<span class="pill' + (o.picked ? '' : ' warn') + '">학생이 고른 질문 ' + o.picked + '/' + ON_MAX + '</span>' +
@@ -968,9 +1004,8 @@ function toggleAppOn() {
   renderAppOnToggle();
   if (appOn.open && !onCache[cur.appId]) {
     var appId = cur.appId;
-    api('getOnQuestions', { appId: appId }).then(function (res) {
+    loadOn(appId).then(function (res) {
       if (!res.ok) { toast(res.msg, 4000); return; }
-      onCache[appId] = res.questions;
       if (cur.appId === appId && appOn.open) renderAppOnToggle();
     });
   }
@@ -1006,28 +1041,23 @@ function pickOn(i, on) {
   renderAppOnList();
 }
 
-/** 고른 질문을 근거(과목)가 같은 것끼리 묶어 보낸다. 근거는 질문마다 다를 수 있다. */
+/** 고른 면접ON 질문을 교사 질문으로 한 번에 넣는다. 근거(과목)는 질문마다 다를 수 있다. */
 function addOnPicked() {
   var list = onCache[cur.appId] || [];
   var picked = Object.keys(appOn.sel).map(function (i) { return list[i]; }).filter(Boolean);
   if (!picked.length) return;
-  var groups = {};
-  picked.forEach(function (q) { (groups[q.basis || ''] = groups[q.basis || ''] || []).push(q.text); });
-  var appId = cur.appId, author = me(), keys = Object.keys(groups), added = 0, failed = '';
-  // 시트 잠금에서 서로 밀리지 않도록 한 묶음씩 차례로 보낸다.
-  (function send(i) {
-    if (i >= keys.length) {
-      appOn.sel = {};
-      if (cur.appId === appId) renderApp();
-      toast(failed ? failed : added + '개를 교사 질문으로 넣었습니다. 학생에게는 모의면접 강평을 저장한 뒤 보입니다.', 4000);
-      return;
-    }
-    var basis = keys[i];
-    api('addQuestions', { appId: appId, author: author, questions: groups[basis], basis: basis }).then(function (res) {
-      if (res.ok) added += groups[basis].length; else failed = res.msg;
-      send(i + 1);
-    });
-  })(0);
+  var appId = cur.appId;
+  // 근거가 달라도 질문마다 근거를 붙여 한 번에 보낸다 (요청마다 서버 기본 지연이 2~3초)
+  api('addQuestions', {
+    appId: appId, author: me(),
+    questions: picked.map(function (q) { return q.text; }),
+    basis: picked.map(function (q) { return q.basis || ''; })
+  }).then(function (res) {
+    if (!res.ok) { toast(res.msg, 4000); return; }
+    appOn.sel = {};
+    if (cur.appId === appId) renderApp();
+    toast(picked.length + '개를 교사 질문으로 넣었습니다. 학생에게는 모의면접 강평을 저장한 뒤 보입니다.', 4000);
+  });
 }
 
 function delOn(appId) {
@@ -1095,7 +1125,7 @@ function editQ(id) {
 }
 function saveQ(id) {
   api('updateQuestion', { id: id, text: $('eq-' + id).value, basis: $('eb-' + id).value }).then(function (res) {
-    if (!res.ok) { toast(res.msg, 4000); return; }
+    if (!res.ok) toast(res.msg, 4000);
     renderApp();
   });
 }
@@ -1109,7 +1139,7 @@ function delQ(id) {
 function delFb(id) {
   if (!confirm('이 강평 기록을 삭제할까요? 되돌릴 수 없습니다.')) return;
   api('deleteFeedback', { id: id }).then(function (res) {
-    if (!res.ok) { toast(res.msg, 4000); return; }
+    if (!res.ok) toast(res.msg, 4000);
     renderApp();
   });
 }
@@ -1119,7 +1149,8 @@ var onUp = { target: '', rows: [], busy: false };
 
 /** appId가 있으면 그 지원 하나에 올린다. 없으면 여러 파일을 파일 이름으로 연결한다. */
 function openOnUpload(appId) {
-  onUp = { target: appId, rows: [], busy: false };
+  onUp = { target: appId, rows: [], busy: false, done: false };
+  $('onDone').classList.add('hidden');
   var a = appId && appById(appId), s = a && studentOf(sKey(a.klass, a.no));
   $('onSub').textContent = a
     ? s.name + ' · ' + a.univ + ' ' + a.major + '에 연결합니다.'
@@ -1161,6 +1192,8 @@ function readOnFiles(fileList) {
   if (!files.length) { toast('PDF 파일을 골라 주세요.'); return; }
   if (onUp.target) files = files.slice(0, 1);
   onUp.busy = true;
+  onUp.done = false;
+  $('onDone').classList.add('hidden');
   $('onProg').classList.remove('hidden');
   var done = 0;
   function prog(name) {
@@ -1215,7 +1248,7 @@ function matchOnFile(name, qs, err) {
     if (info && (normPlain(info.name) !== normPlain(s.name) || normUniv(info.univ) !== normUniv(a.univ))) row.note = '파일 이름의 학생·대학이 이 지원과 다릅니다. 맞는 파일인지 확인하세요.';
     return row;
   }
-  if (!info) { row.note = '파일 이름이 "이름 면접ON_대학_모집단위.pdf" 형태가 아닙니다.'; return row; }
+  if (!info) { row.note = '파일 이름이 "이름_면접ON_대학_모집단위.pdf" 형태가 아닙니다.'; return row; }
   data.students.filter(function (s) { return normPlain(s.name) === normPlain(info.name); }).forEach(function (s) {
     row.options = row.options.concat(appsOf(sKey(s.klass, s.no)));
   });
@@ -1236,10 +1269,11 @@ function renderOnRes() {
   $('onResCard').classList.toggle('hidden', !rows.length);
   $('onResBody').innerHTML = rows.map(function (r, i) {
     var sel = r.options.length
-      ? '<select onchange="onUp.rows[' + i + '].appId=this.value;renderOnRes()"' + (onUp.target ? ' disabled' : '') + '><option value="">(저장 안 함)</option>' +
+      ? '<select onchange="onUp.rows[' + i + '].appId=this.value;renderOnRes()"' + (onUp.target || r.saved ? ' disabled' : '') + '><option value="">(저장 안 함)</option>' +
         r.options.map(function (a) { return '<option value="' + a.id + '"' + (a.id === r.appId ? ' selected' : '') + '>' + esc(appLabel(a)) + '</option>'; }).join('') + '</select>'
       : '<span class="muted">—</span>';
     var st = r.err ? '<span class="pill bad">' + esc(r.err) + '</span>'
+      : r.saved ? '<span class="pill ok">' + ic('check') + '저장 완료</span>'
       : !r.appId ? '<span class="pill warn">연결 안 됨</span>'
       : uses[r.appId] > 1 ? '<span class="pill warn">같은 지원에 파일 ' + uses[r.appId] + '개</span>'
       : onqOf(r.appId) ? '<span class="pill warn">바꿔 넣음</span>'
@@ -1249,40 +1283,63 @@ function renderOnRes() {
   }).join('');
   var ready = onReadyRows();
   $('onResCount').textContent = rows.length + '개';
-  $('onResNote').textContent = ready.length < rows.length ? '연결 안 된 파일 ' + (rows.length - ready.length) + '개는 저장하지 않습니다.' : '';
-  $('onSaveBtn').disabled = !ready.length;
-  $('onSaveBtn').innerHTML = ic('check') + (ready.length ? ready.length + '개 파일 질문 저장' : '저장할 파일 없음');
+  var unsaved = rows.filter(function (r) { return !r.saved; }).length;
+  $('onResNote').textContent = ready.length < unsaved ? '연결 안 된 파일 ' + (unsaved - ready.length) + '개는 저장하지 않습니다.' : '';
+  // 저장을 마쳤고 더 저장할 파일이 없으면 버튼은 [완료 · 돌아가기]
+  var finished = onUp.done && !ready.length;
+  $('onSaveBtn').disabled = !ready.length && !finished;
+  $('onSaveBtn').innerHTML = ic('check') + (ready.length ? ready.length + '개 파일 질문 저장' : finished ? '완료 · 돌아가기' : '저장할 파일 없음');
 }
-function onReadyRows() { return onUp.rows.filter(function (r) { return r.appId && !r.err && r.qs.length; }); }
+function onReadyRows() { return onUp.rows.filter(function (r) { return r.appId && !r.err && r.qs.length && !r.saved; }); }
 
 function saveOnUpload() {
   var ready = onReadyRows();
-  if (!ready.length) return;
+  if (!ready.length) { if (onUp.done) closeOnUpload(); return; }
   var items = ready.map(function (r) {
     return { appId: r.appId, file: r.file, questions: r.qs.map(function (q) { return [q.area, q.subj, q.text]; }) };
   });
   onUp.busy = true;
   $('onSaveBtn').disabled = true;
-  // 한 번에 너무 크게 보내지 않도록 15개씩 나눠 저장한다
+  $('onSaveBtn').innerHTML = '<span class="spin"></span>저장 중…';
+  $('onResNote').textContent = items.length + '개 파일을 서버에 저장하고 있습니다. 끝날 때까지 이 화면을 닫지 마세요.';
+  // 한 번에 너무 크게 보내지 않도록 약 1MB씩 나눠 저장한다 (요청마다 서버 기본 지연이 2~3초라 횟수를 줄인다)
+  var parts = [], part = [], size = 0;
+  items.forEach(function (it) {
+    var n = JSON.stringify(it).length;
+    if (part.length && size + n > 1000000) { parts.push(part); part = []; size = 0; }
+    part.push(it); size += n;
+  });
+  if (part.length) parts.push(part);
   var chain = Promise.resolve(true), saved = 0;
-  for (var i = 0; i < items.length; i += 15) {
-    (function (part) {
-      chain = chain.then(function (ok) {
-        if (!ok) return false;
-        return api('saveOnQuestions', { author: me(), items: part }).then(function (res) {
-          if (!res.ok) { toast(res.msg, 5000); return false; }
-          part.forEach(function (it) { delete onCache[it.appId]; });
-          saved += res.saved;
-          return true;
-        });
+  parts.forEach(function (part, i) {
+    chain = chain.then(function (ok) {
+      if (!ok) return false;
+      // 전체 자료는 마지막 요청에서만 받는다
+      return api('saveOnQuestions', { author: me(), items: part, noData: i < parts.length - 1 }).then(function (res) {
+        if (!res.ok) { toast(res.msg, 5000); return false; }
+        part.forEach(function (it) { delete onCache[it.appId]; });
+        saved += res.saved;
+        return true;
       });
-    })(items.slice(i, i + 15));
-  }
-  chain.then(function (ok) {
+    });
+  });
+  chain.catch(function (e) {
+    // 화면 처리 중 오류가 나도 저장 버튼이 잠긴 채로 남지 않게 한다
+    console.error(e);
+    toast('저장 중 오류: ' + (e && e.message || e), 6000);
+    return false;
+  }).then(function (ok) {
     onUp.busy = false;
     if (!ok) { renderOnRes(); return; }
-    toast(saved + '개 지원 대학에 면접ON 질문을 저장했습니다. 학생 화면에 바로 보입니다.', 4000);
-    closeOnUpload();
+    // 목록으로 바로 돌아가지 않고, 이 화면에 완료를 크게 보여 준다
+    ready.forEach(function (r) { r.saved = true; });
+    onUp.done = true;
+    $('onDone').innerHTML = '<div class="big">' + ic('check') + '</div><div><b>저장 완료</b>' +
+      '<span>' + saved + '개 지원 대학에 면접ON 질문을 저장했습니다. 학생 화면에 바로 보입니다.</span></div>';
+    $('onDone').classList.remove('hidden');
+    renderOnRes();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast('저장 완료: ' + saved + '개 지원 대학', 4000);
   });
 }
 
@@ -1354,7 +1411,10 @@ function onParse(pages) {
 
 /** "김지후 면접ON_건국대학교_KU자유전공학부.pdf" → { name, univ, major } (맥에서 만든 파일 이름도 읽도록 NFC로 맞춤) */
 function onFileInfo(fileName) {
-  var m = String(fileName).normalize('NFC').match(/^(.+?)\s*면접\s*ON\s*_(.+?)_(.+?)\.pdf$/i);
+  // 이름과 '면접ON' 사이는 띄어쓰기·밑줄·붙여쓰기 모두 받는다 (김지후 면접ON_…, 김지후_면접ON_…, 김지후면접ON_…)
+  // 같은 파일을 여러 번 받아 생긴 ' (1)'은 떼고 본다
+  var f = String(fileName).normalize('NFC').replace(/\s*\(\d+\)(\.pdf)$/i, '$1');
+  var m = f.match(/^(.+?)[\s_]*면접\s*ON[\s_]*_(.+?)_(.+?)\.pdf$/i);
   return m ? { name: m[1].trim(), univ: m[2].trim(), major: m[3].trim() } : null;
 }
 
@@ -1435,6 +1495,20 @@ function renderRunQs() {
 
 /* 면접 화면의 면접ON 목록: 처음엔 접어 두고, 펼칠 때 서버에서 받아 온다. */
 var onCache = {}; // 지원ID → 면접ON 질문 목록
+var onLoading = {}; // 지원ID → 받아 오는 중인 요청 (같은 요청을 두 번 보내지 않게)
+
+/** 면접ON 질문을 받아 onCache에 넣는다. quiet면 처리 중 표시 없이 미리 받아 둔다. */
+function loadOn(appId, quiet) {
+  if (onCache[appId]) return Promise.resolve({ ok: true });
+  if (!onLoading[appId]) {
+    onLoading[appId] = api('getOnQuestions', { appId: appId }, quiet).then(function (res) {
+      delete onLoading[appId];
+      if (res.ok) onCache[appId] = res.questions;
+      return res;
+    });
+  }
+  return onLoading[appId];
+}
 function renderRunOn() {
   var o = onqOf(cur.appId);
   $('runOnBox').classList.toggle('hidden', !o);
@@ -1463,9 +1537,8 @@ function toggleRunOn() {
   renderRunOn();
   if (run.onOpen && !onCache[cur.appId]) {
     var appId = cur.appId;
-    api('getOnQuestions', { appId: appId }).then(function (res) {
+    loadOn(appId).then(function (res) {
       if (!res.ok) { toast(res.msg, 4000); return; }
-      onCache[appId] = res.questions;
       if (run && cur.appId === appId) renderRunOn();
     });
   }
@@ -1719,7 +1792,12 @@ window.addEventListener('beforeunload', function (e) {
 
 (function start() {
   var saved = lsGet(LS.pw);
-  if (!saved) { go('lock'); return; }
+  if (!saved) {
+    go('lock');
+    // 비번을 치는 동안 서버를 미리 깨워 둔다 (결과는 쓰지 않음, 화면 가림막도 띄우지 않음)
+    fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'ping' }) }).catch(function () {});
+    return;
+  }
   pw = saved;
   api('auth').then(function (res) {
     if (!res.ok) { pw = ''; lsSet(LS.pw, ''); go('lock'); return; }
